@@ -1,5 +1,10 @@
     <nav>
         <div class="logo">Hexed</div>
-        <button>Login</button>
-        <button>Register</button>
+        <a href="{{ route('login') }}">
+            <button>Login</button>
+        </a>
+        <a href="{{ route('register') }}">
+            <button>Register</button>
+        </a>
+
     </nav>
