@@ -30,3 +30,7 @@ Route::get('/login', function () {
 })->name('login');
 
 Route::post('/login', [LoginController::class, 'login'])->name('login.submit');
+
+Route::get('/game', function () {
+    return view('game');
+})->name('game');
