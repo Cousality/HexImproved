@@ -29,15 +29,32 @@
 
     </svg>
     <script>
+        const board =  [];
+        document.querySelectorAll('polygon').forEach(hex => {
+            board.push({
+                row: Number(hex.dataset.row),
+                column: Number(hex.dataset.column),
+                owner: null,
+                element: hex
+
+            })
+        });
+
+        </script>
+
+    <script>
         let player1 = false;
 
-        function hexClicked(hex) {
-            if (player1 == false) {
-                hex.setAttribute('fill', 'blue');
-                player1 = true;
+        function hexClicked(hexElement) {
+            const tile = board.find(hex => {
+                return hex.element === hexElement
+            })
+            if (tile.owner === null) {
+                tile.owner = player1 ? 'Player 1' : 'Player 2';
+                hexElement.setAttribute('fill', player1 ? 'purple' : 'pink');
+                player1 = !player1;
             } else {
-                hex.setAttribute('fill', 'red');
-                player1 = false;
+               return;
             }
 
 
