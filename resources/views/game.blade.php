@@ -14,7 +14,7 @@
 
                 <polygon
                     points="
-                        {{ $x }},{{ $y - 64 }}
+                        {{ $x }},{{ $y - 64 }} 
                         {{ $x + 48 }},{{ $y - 32 }}
                         {{ $x + 48 }},{{ $y + 32 }}
                         {{ $x }},{{ $y + 64 }}
@@ -39,6 +39,8 @@
                 hex.setAttribute('fill', 'red');
                 player1 = false;
             }
+
+
 
         }
     </script>
