@@ -55,6 +55,9 @@
                     @csrf
                     <button>Logout</button>
                 </form>
+                <a href="{{ route('profile') }}">
+                    <button>Profile</button>
+                </a>
             @else
                 <a href="{{ route('login') }}">
                     <button>Login</button>
