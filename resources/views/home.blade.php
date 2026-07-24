@@ -1,74 +1,46 @@
-<!DOCTYPE html>
-<html lang="en">
-<x-layout>
+ <x-layout>
+     <style>
+         main {
+             display: flex;
+             flex-direction: column;
+             align-items: center;
+             justify-content: center;
+             text-align: center;
+             height: calc(100vh - 60px);
+         }
 
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Hexed</title>
-        <style>
-            * {
-                box-sizing: border-box;
-                margin: 0;
-                padding: 0;
-            }
+         main h1 {
+             font-size: 2.2rem;
+             margin-bottom: 30px;
+         }
 
-            body {
-                font-family: Arial, Helvetica, sans-serif;
-                background: #f4f4f4;
-                color: #222;
-            }
+         .play-buttons {
+             display: flex;
+             gap: 20px;
+         }
 
+         .play-buttons button {
+             padding: 14px 32px;
+             font-size: 1rem;
+             background: #222;
+             color: #fff;
+             border: none;
+             border-radius: 4px;
+             cursor: pointer;
+         }
 
-            main {
-                display: flex;
-                flex-direction: column;
-                align-items: center;
-                justify-content: center;
-                text-align: center;
-                height: calc(100vh - 60px);
-            }
+         .play-buttons button:hover {
+             background: #444;
+         }
+     </style>
 
-            main h1 {
-                font-size: 2.2rem;
-                margin-bottom: 30px;
-            }
+     @include('components.nav')
 
-            .play-buttons {
-                display: flex;
-                gap: 20px;
-            }
-
-            .play-buttons button {
-                padding: 14px 32px;
-                font-size: 1rem;
-                background: #222;
-                color: #fff;
-                border: none;
-                border-radius: 4px;
-                cursor: pointer;
-            }
-
-            .play-buttons button:hover {
-                background: #444;
-            }
-        </style>
-    </head>
-
-    <body>
-
-        @include('components.nav')
-
-        <main>
-            <h1>Hexed</h1>
-            <div class="play-buttons">
-                <a href="{{ route('game') }}"><button>Play</button></a>
-
-                <button>Play</button>
-            </div>
-        </main>
-
-    </body>
-
-</html>
-</x-layout>
+     <main>
+         <h1>Hexed</h1>
+         <div class="play-buttons">
+             <a href="{{ route('game') }}"><button>Play vs AI</button></a>
+             <button>Friendly</button>
+         </div>
+     </main>
+ </x-layout>

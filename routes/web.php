@@ -1,8 +1,7 @@
 <?php
 
+use App\Http\Controllers\AuthController;
 use App\Http\Controllers\GameController;
-use App\Http\Controllers\LoginController;
-use App\Http\Controllers\RegisterController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -20,17 +19,13 @@ Route::get('/', function () {
     return view('home');
 })->name('home');
 
-Route::get('/register', function () {
-    return view('auth.register');
-})->name('register');
+Route::get('/register', [AuthController::class, 'showRegisterForm'])->name('register');
+Route::post('/register', [AuthController::class, 'register'])->name('register.submit');
 
-Route::post('/register', [RegisterController::class, 'register'])->name('register.submit');
+Route::get('/login', [AuthController::class, 'showloginForm'])->name('login');
+Route::post('/login', [AuthController::class, 'login'])->name('login.submit');
 
-Route::get('/login', function () {
-    return view('auth.login');
-})->name('login');
-
-Route::post('/login', [LoginController::class, 'login'])->name('login.submit');
+Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
 Route::get('/game', [GameController::class, 'show'])->name('game');
 Route::post('/game/move', [GameController::class, 'game'])->name('game.move');
