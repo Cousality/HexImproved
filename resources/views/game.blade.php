@@ -1,4 +1,33 @@
 <x-layout>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+            background: #f4f4f4;
+            color: #222;
+        }
+
+
+        main {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            height: calc(100vh - 60px);
+        }
+
+        main h1 {
+            font-size: 2.2rem;
+            margin-bottom: 30px;
+        }
+    </style>
+
 
     @include('components.nav')
 
@@ -8,7 +37,6 @@
     @endphp
 
     <svg width="{{ $svgWidth }}" height="{{ $svgHeight }}">
-
         @foreach ($board as $tile)
             @php
                 $x = 100 + $tile['column'] * 96 + $tile['row'] * 48;
@@ -17,7 +45,7 @@
 
             <polygon
                 points="
-                    {{ $x }},{{ $y - 64 }} 
+                    {{ $x }},{{ $y - 64 }}
                     {{ $x + 48 }},{{ $y - 32 }}
                     {{ $x + 48 }},{{ $y + 32 }}
                     {{ $x }},{{ $y + 64 }}
@@ -27,8 +55,8 @@
                 fill="lightgray" stroke="black" data-row="{{ $tile['row'] }}" data-column="{{ $tile['column'] }}"
                 onClick="hexClicked(this)" />
         @endforeach
-
     </svg>
+
     <script>
         const board = [];
         document.querySelectorAll('polygon').forEach(hex => {
@@ -37,12 +65,9 @@
                 column: Number(hex.dataset.column),
                 owner: null,
                 element: hex
-
             })
         });
-    </script>
 
-    <script>
         let player1 = false;
 
         function hexClicked(hexElement) {
@@ -58,5 +83,4 @@
             }
         }
     </script>
-
 </x-layout>
