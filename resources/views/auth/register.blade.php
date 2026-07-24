@@ -1,5 +1,3 @@
-<!-- resources/views/auth/register.blade.php -->
-
 <x-layout>
     @include('components.nav')
 
