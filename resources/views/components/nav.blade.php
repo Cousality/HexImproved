@@ -50,11 +50,20 @@
             <a href="{{ route('home') }}">Hexed</a>
         </div>
         <div>
-            <a href="{{ route('login') }}">
-                <button>Login</button>
-            </a>
-            <a href="{{ route('register') }}">
-                <button>Register</button>
-            </a>
+            @auth
+                <form action="{{ route('logout') }}" method="POST">
+                    @csrf
+                    <button>Logout</button>
+                </form>
+            @else
+                <a href="{{ route('login') }}">
+                    <button>Login</button>
+                </a>
+                <a href="{{ route('register') }}">
+                    <button>Register</button>
+                </a>
+
+            @endauth
+
         </div>
     </nav>
