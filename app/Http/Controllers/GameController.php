@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\Http\Request;
+
 class GameController extends Controller
 {
     public $BoardSize = 7;
@@ -37,5 +39,25 @@ class GameController extends Controller
 
     public function move(Request $request)
     {
+        $validated = $request->validate([
+            'row' => 'required|integer|min:0|max:' . ($this->BoardSize - 1),
+            'column' => 'required|integer|min:0|max:' . ($this->BoardSize - 1),
+            'player' => 'required|in:player1,player2',
+        ]);
+
+        // Process the validated move
+
+        $row = $validated['row'];
+        $column = $validated['column'];
+        $player = $validated['player'];
+
+        return response()->json([
+            'message' => 'Move processed successfully',
+            'row' => $row,
+            'column' => $column,
+            'player' => $player,
+        ]);
     }
+
+    
 }

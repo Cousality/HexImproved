@@ -29,34 +29,55 @@
         @endforeach
 
     </svg>
+
+
+
+    //working on this shi rn
     <script>
+        //stores tiles on the board   
         const board = [];
+        //fins every polygon and pushes it into the board array with its row, column, owner, and element
         document.querySelectorAll('polygon').forEach(hex => {
-            board.push({
+            const tile = {
                 row: Number(hex.dataset.row),
                 column: Number(hex.dataset.column),
                 owner: null,
                 element: hex
 
-            })
+            };
+            board.push(tile);
         });
-    </script>
 
-    <script>
-        let player1 = false;
 
-        function hexClicked(hexElement) {
-            const tile = board.find(hex => {
-                return hex.element === hexElement
-            })
-            if (tile.owner === null) {
-                tile.owner = player1 ? 'Player 1' : 'Player 2';
-                hexElement.setAttribute('fill', player1 ? 'purple' : 'pink');
-                player1 = !player1;
-            } else {
-                return;
-            }
+
+        let Player1 = false;
+
+        function hexClicked(hexElement){
+
+        const tile = board.find(function(hex){return hex.element === hexElement});
+
+        if (tile.owner !==null){
+            alert('This tile is already owned by a player!');
+            return;
         }
+
+        tile.owner = Player1 ? 'Player 1' : 'Player 2';
+
+        if (Player1){
+            
+            hexElement.setAttribute('fill', 'blue');
+        } else {
+            hexElement.setAttribute('fill', 'red');
+        }
+
+        Player1 = !Player1;
+        }
+
+    
+
+
+
     </script>
+
 
 </x-layout>
