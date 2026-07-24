@@ -1,18 +1,5 @@
  <x-layout>
      <style>
-         * {
-             box-sizing: border-box;
-             margin: 0;
-             padding: 0;
-         }
-
-         body {
-             font-family: Arial, Helvetica, sans-serif;
-             background: #f4f4f4;
-             color: #222;
-         }
-
-
          main {
              display: flex;
              flex-direction: column;
@@ -52,8 +39,8 @@
      <main>
          <h1>Hexed</h1>
          <div class="play-buttons">
-             <a href="{{ route('game') }}"><button>Play</button></a>
-             <button>Play</button>
+             <a href="{{ route('game') }}"><button>Play vs AI</button></a>
+             <button>Friendly</button>
          </div>
      </main>
  </x-layout>

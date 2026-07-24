@@ -1,18 +1,5 @@
 <x-layout>
     <style>
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
-
-        body {
-            font-family: Arial, Helvetica, sans-serif;
-            background: #f4f4f4;
-            color: #222;
-        }
-
-
         main {
             display: flex;
             flex-direction: column;
