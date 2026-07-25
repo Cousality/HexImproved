@@ -18,6 +18,8 @@
 
     @include('components.nav')
 
+    <h1 id="turnTitle"></h1>
+
     @php
         $svgWidth = 250 + $boardSize * 144;
         $svgHeight = 200 + $boardSize * 92;
@@ -55,7 +57,19 @@
             })
         });
 
-        let player1 = false;
+        let player1 = true;
+
+        const turnTitle = document.getElementById('turnTitle');
+
+
+
+        function updateTurnTitle() {
+
+            turnTitle.textContent = (player1 ? 'Player 1' : 'Player 2') + "'s turn";
+
+        }
+
+
 
         function hexClicked(hexElement) {
             const tile = board.find(hex => {
@@ -63,11 +77,14 @@
             })
             if (tile.owner === null) {
                 tile.owner = player1 ? 'Player 1' : 'Player 2';
-                hexElement.setAttribute('fill', player1 ? 'purple' : 'pink');
+                hexElement.setAttribute('fill', player1 ? 'pink' : 'purple');
                 player1 = !player1;
+                updateTurnTitle();
             } else {
                 return;
             }
+            
         }
+        updateTurnTitle();
     </script>
 </x-layout>
