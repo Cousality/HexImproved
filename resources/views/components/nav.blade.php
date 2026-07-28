@@ -7,8 +7,8 @@
 
         body {
             font-family: Arial, Helvetica, sans-serif;
-            background: #f4f4f4;
-            color: #222;
+            background: #422a4c;
+            color: #f6e999;
         }
 
         .logo a {
@@ -21,7 +21,7 @@
             align-items: center;
             justify-content: space-between;
             padding: 16px 32px;
-            background: #222;
+            background: #2d133a;
             color: #fff;
         }
 
@@ -33,15 +33,16 @@
         nav button {
             padding: 8px 18px;
             font-size: 0.95rem;
-            background: #444;
-            color: #fff;
+            font-family: Arial, Helvetica, sans-serif;
+            background: #422a4c;
+            color: #f6e999;
             border: none;
             border-radius: 4px;
             cursor: pointer;
         }
 
         nav button:hover {
-            background: #555;
+            color: #fde5d9
         }
     </style>
 
