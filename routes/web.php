@@ -28,8 +28,5 @@ Route::post('/login', [AuthController::class, 'login'])->name('login.submit');
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
 Route::get('/game', [GameController::class, 'show'])->name('game');
-Route::post('/game/move', [GameController::class, 'game'])->name('game.move');
-
-Route::get('/profile', function () {
-    return view('profile');
-})->name('profile');
+Route::post('/game/move', [GameController::class, 'move'])->name('game.move');
+Route::post('/game/reset', [GameController::class, 'reset'])->name('game.reset');
