@@ -11,18 +11,18 @@ class GameController extends Controller
     public $Board = [];
 
     public function show(Request $request)
-{
-    if (!$request->session()->has('board')) {
-        $request->session()->put('board', $this->createBoard());
+    {
+        if (! $request->session()->has('board')) {
+            $request->session()->put('board', $this->createBoard());
+        }
+
+        $this->Board = $request->session()->get('board');
+
+        return view('game', [
+            'board' => $this->Board,
+            'boardSize' => $this->BoardSize,
+        ]);
     }
-
-    $this->Board = $request->session()->get('board');
-
-    return view('game', [
-        'board' => $this->Board,
-        'boardSize' => $this->BoardSize,
-    ]);
-}
 
     private function createBoard()
     {
@@ -40,7 +40,9 @@ class GameController extends Controller
 
         return $board;
     }
-    private function neighbours(int $row, int $column): array {
+
+    private function neighbours(int $row, int $column): array
+    {
         $directions = [
             [-1, 0],
             [-1, 1],
@@ -48,20 +50,21 @@ class GameController extends Controller
             [0, 1],
             [1, -1],
             [1, 0],
-            ];
-            
-            $neighbours = [];
-            
-            foreach ($directions as $direction) {
-                $neighbourRow = $row + $direction[0];
-                $neighbourColumn = $column + $direction[1];
-                
-                if ( $neighbourRow >= 0 && $neighbourRow < $this->BoardSize &&
-                    $neighbourColumn >= 0 && $neighbourColumn < $this->BoardSize ) {
-                        $neighbours[] = ['row' => $neighbourRow,'column' => $neighbourColumn, ];
-                        }
-                        }
-                        return $neighbours;
+        ];
+
+        $neighbours = [];
+
+        foreach ($directions as $direction) {
+            $neighbourRow = $row + $direction[0];
+            $neighbourColumn = $column + $direction[1];
+
+            if ($neighbourRow >= 0 && $neighbourRow < $this->BoardSize &&
+                $neighbourColumn >= 0 && $neighbourColumn < $this->BoardSize) {
+                $neighbours[] = ['row' => $neighbourRow, 'column' => $neighbourColumn];
+            }
+        }
+
+        return $neighbours;
     }
 
 private function checkWin(string $player): bool
@@ -83,10 +86,10 @@ private function checkWin(string $player): bool
         }
     }
 
-    while (!empty($tilesToCheck)) {
+    while (! empty($tilesToCheck)) {
         $currentTile = array_pop($tilesToCheck);
 
-        $key = $currentTile['row'] . '-' . $currentTile['column'];
+        $key = $currentTile['row'].'-'.$currentTile['column'];
 
         if (in_array($key, $visited)) {
             continue;
@@ -128,15 +131,12 @@ private function checkWin(string $player): bool
     return false;
 }
 
-
-
-
     public function move(Request $request)
     {
         $this->Board = $request->session()->get('board', $this->createBoard());
         $validated = $request->validate([
-            'row' => 'required|integer|min:0|max:' . ($this->BoardSize - 1),
-            'column' => 'required|integer|min:0|max:' . ($this->BoardSize - 1),
+            'row' => 'required|integer|min:0|max:'.($this->BoardSize - 1),
+            'column' => 'required|integer|min:0|max:'.($this->BoardSize - 1),
             'player' => 'required|in:player1,player2',
         ]);
 
@@ -147,35 +147,33 @@ private function checkWin(string $player): bool
         $player = $validated['player'];
 
         foreach ($this->Board as &$tile) {
-        if ($tile['row'] === $row && $tile['column'] === $column) {
-        $tile['owner'] = $player;
-        break;
-    }
-}
+            if ($tile['row'] === $row && $tile['column'] === $column) {
+                $tile['owner'] = $player;
+                break;
+            }
+        }
 
-unset($tile);
+        unset($tile);
 
-$request->session()->put('board', $this->Board);
+        $request->session()->put('board', $this->Board);
 
-$winner = $this->checkWin($player);
+        $winner = $this->checkWin($player);
 
         return response()->json([
-    'message' => 'Move processed successfully',
-    'row' => $row,
-    'column' => $column,
-    'player' => $player,
-    'winner' => $winner,
-            ]);
+            'message' => 'Move processed successfully',
+            'row' => $row,
+            'column' => $column,
+            'player' => $player,
+            'winner' => $winner,
+        ]);
     }
 
     public function reset(Request $request)
-{
-    $request->session()->forget('board');
+    {
+        $request->session()->forget('board');
 
-    return response()->json([
-        'message' => 'Game reset',
-    ]);
-}
-
-    
+        return response()->json([
+            'message' => 'Game reset',
+        ]);
+    }
 }
