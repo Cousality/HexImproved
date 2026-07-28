@@ -41,7 +41,7 @@
                     {{ $x - 48 }},{{ $y + 32 }}
                     {{ $x - 48 }},{{ $y - 32 }}
                 "
-                fill="{{ $tile['owner'] === 'player1' ? 'blue' : ($tile['owner'] === 'player2' ? 'red' : 'lightgray') }}"
+                fill="{{ $tile['owner'] === 'player1' ? '#e274d3' : ($tile['owner'] === 'player2' ? '#a97fe6' : 'lightgray') }}"
                 stroke="black" data-row="{{ $tile['row'] }}" data-column="{{ $tile['column'] }}"
                 data-owner="{{ $tile['owner'] }}" onClick="hexClicked(this)" />
         @endforeach
@@ -105,7 +105,7 @@
 
             hexElement.setAttribute(
                 'fill',
-                currentPlayer === 'player1' ? 'blue' : 'red'
+                currentPlayer === 'player1' ? '#e274d3' : '#a97fe6'
             );
 
             if (data.winner) {
