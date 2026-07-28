@@ -1,6 +1,24 @@
 <x-layout>
+    <style>
+        main {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            height: calc(100vh - 60px);
+        }
+
+        main h1 {
+            font-size: 2.2rem;
+            margin-bottom: 30px;
+        }
+    </style>
+
 
     @include('components.nav')
+
+    <h1 id="turnTitle"></h1>
 
     @php
         $svgWidth = 250 + $boardSize * 144;
@@ -8,7 +26,6 @@
     @endphp
 
     <svg width="{{ $svgWidth }}" height="{{ $svgHeight }}">
-
         @foreach ($board as $tile)
             @php
                 $x = 100 + $tile['column'] * 96 + $tile['row'] * 48;
@@ -17,7 +34,7 @@
 
             <polygon
                 points="
-                    {{ $x }},{{ $y - 64 }} 
+                    {{ $x }},{{ $y - 64 }}
                     {{ $x + 48 }},{{ $y - 32 }}
                     {{ $x + 48 }},{{ $y + 32 }}
                     {{ $x }},{{ $y + 64 }}
@@ -28,7 +45,6 @@
                 stroke="black" data-row="{{ $tile['row'] }}" data-column="{{ $tile['column'] }}"
                 data-owner="{{ $tile['owner'] }}" onClick="hexClicked(this)" />
         @endforeach
-
     </svg>
 
 
@@ -110,6 +126,7 @@
                 'player2' :
                 'player1';
         }
+        updateTurnTitle();
     </script>
 
 
