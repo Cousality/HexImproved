@@ -10,6 +10,14 @@
              --radius: 16px;
          }
 
+         body {
+             background-color: var(--bg-dark);
+             color: var(--accent-light);
+             font-family: 'Plus Jakarta Sans', sans-serif;
+             line-height: 1.6;
+             overflow-x: hidden;
+         }
+
 
 
          main {
@@ -46,13 +54,15 @@
          }
      </style>
 
-     @include('components.nav')
+     <body>
+         @include('components.nav')
 
-     <main>
-         <h1>Hexed</h1>
-         <div class="play-buttons">
-             <a href="{{ route('game') }}"><button>Play vs AI</button></a>
-             <button>Friendly</button>
-         </div>
-     </main>
+         <main>
+             <h1>Hexed</h1>
+             <div class="play-buttons">
+                 <a href="{{ route('game') }}"><button>Play vs AI</button></a>
+                 <button>Friendly</button>
+             </div>
+         </main>
+     </body>
  </x-layout>

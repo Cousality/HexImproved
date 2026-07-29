@@ -44,6 +44,10 @@
             align-items: center;
             gap: 10px;
             text-decoration: none;
+            font-family: 'Fredoka', sans-serif;
+            font-weight: 500;
+            color: var(--text-yellow);
+            text-decoration: none;
         }
 
 
@@ -52,11 +56,6 @@
             font-family: Arial, Helvetica, sans-serif;
             background: #422a4c;
             color: #f6e999;
-        }
-
-        .logo a {
-            color: inherit;
-            text-decoration: none;
         }
 
         nav {
@@ -93,13 +92,14 @@
         }
     </style>
     <header>
+        <div class="logo">
+            <a href="{{ route('home') }}" class="logo">
+                <span class="logo-hex"></span>
+                HEXED
+            </a>
+        </div>
         <nav>
-            <div class="logo">
-                <a href="{{ route('home') }}" class="logo">
-                    <span class="logo-hex"></span>
-                    HEXED
-                </a>
-            </div>
+
             <div>
                 @auth
                     <a action="{{ route('logout') }}" method="POST">
