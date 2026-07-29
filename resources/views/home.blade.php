@@ -1,5 +1,17 @@
  <x-layout>
      <style>
+         :root {
+             --bg-dark: #2d133a;
+             --bg-lighter: #422a4c;
+             --text-yellow: #f6e999;
+             --accent-light: #fde5d9;
+             --player-1: #e274d3;
+             --player-2: #a97fe6;
+             --radius: 16px;
+         }
+
+
+
          main {
              display: flex;
              flex-direction: column;
