@@ -105,7 +105,7 @@
 
             hexElement.setAttribute(
                 'fill',
-                currentPlayer === 'player1' ? 'blue' : 'red'
+                currentPlayer === 'player1' ? '#e274d3' : '#a97fe6'
             );
 
             if (data.winner) {
