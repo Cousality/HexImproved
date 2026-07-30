@@ -42,7 +42,7 @@
                     {{ $x - 48 }},{{ $y - 32 }}
                 "
                 fill="{{ $tile['owner'] === 'player1' ? 'blue' : ($tile['owner'] === 'player2' ? 'red' : 'lightgray') }}"
-                stroke="black" data-row="{{ $tile['row'] }}" data-column="{{ $tile['column'] }}"
+                stroke="darkgray" stroke-width="5" data-row="{{ $tile['row'] }}" data-column="{{ $tile['column'] }}"
                 data-owner="{{ $tile['owner'] }}" onClick="hexClicked(this)" />
         @endforeach
     </svg>
