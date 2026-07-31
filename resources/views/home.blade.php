@@ -38,31 +38,23 @@
              display: flex;
              gap: 20px;
          }
-
-         .play-buttons button {
-             padding: 14px 32px;
-             font-size: 1rem;
-             background: #222;
-             color: #fff;
-             border: none;
-             border-radius: 4px;
-             cursor: pointer;
-         }
-
-         .play-buttons button:hover {
-             background: #444;
-         }
      </style>
 
      <body>
          @include('components.nav')
 
          <main>
-             <h1>Hexed</h1>
+             <h1>Play</h1>
              <div class="play-buttons">
-                 <a href="{{ route('game') }}"><button>Play vs AI</button></a>
-                 <button>Friendly</button>
+                 <x-button :href="route('game')" variant="secondary" size="large">
+                     Play vs AI
+                 </x-button>
+                 <x-button :href="route('game')" variant="primary" size="large">
+                     Friendly
+                 </x-button>
+
              </div>
          </main>
      </body>
+     @include('components.footer')
  </x-layout>
