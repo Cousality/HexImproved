@@ -15,11 +15,11 @@
 
                 <div>
                     <label class="block mb-1 font-medium">
-                        Username
+                        Name
                     </label>
 
-                    <input type="text" name="username" class="w-full border rounded-lg p-3"
-                        placeholder="Enter username">
+                    <input type="text" name="name" class="w-full border rounded-lg p-3"
+                        placeholder="Enter name">
                 </div>
 
 
