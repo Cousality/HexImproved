@@ -1,0 +1,83 @@
+:root {
+    --bg-dark: #2d133a;
+    --bg-lighter: #422a4c;
+    --text-yellow: #f6e999;
+    --accent-light: #fde5d9;
+    --player-1: #e274d3;
+    --player-2: #a97fe6;
+    --radius: 16px;
+}
+
+.hexed-button {
+    display: inline-flex;
+    min-height: 48px;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid transparent;
+    border-radius: 6px;
+    padding: 0 22px;
+    font-family: "Courier New", monospace;
+    font-size: 12px;
+    font-weight: 800;
+    letter-spacing: 0.12em;
+    line-height: 1;
+    text-decoration: none;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: 180ms ease;
+}
+
+.hexed-button:hover {
+    transform: translateY(-2px);
+}
+
+.hexed-button:focus-visible {
+    outline: 3px solid var(--accent-light, #fde5d9);
+    outline-offset: 4px;
+}
+
+/* Outlined variant */
+.hexed-button--secondary {
+    border-color: rgba(246, 233, 153, 0.26);
+    color: var(--text-yellow, #f6e999);
+    background: transparent;
+}
+
+.hexed-button--secondary:hover {
+    border-color: var(--text-yellow, #f6e999);
+    background: rgba(246, 233, 153, 0.06);
+}
+
+/* Filled variant */
+.hexed-button--primary {
+    color: var(--bg-dark, #2d133a);
+    background: var(--accent-light, #fde5d9);
+}
+
+.hexed-button--primary:hover {
+    background: var(--text-yellow, #f6e999);
+}
+
+/* danger variant */
+.hexed-button--danger {
+    border-color: #ef7c8e;
+    color: #fff;
+    background: #a3324a;
+}
+
+.hexed-button--danger:hover {
+    background: #bd3d58;
+}
+
+/* sizes */
+.hexed-button--small {
+    min-height: 40px;
+    padding-inline: 14px;
+    font-size: 10px;
+}
+
+.hexed-button--large {
+    min-height: 80px;
+    padding-inline: 40px;
+    font-size: 20px;
+}
