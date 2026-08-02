@@ -13,71 +13,98 @@
             font-size: 2.2rem;
             margin-bottom: 30px;
         }
-    </style>
 
+        .share-link {
+            background: var(--bg-lighter);
+            padding: 8px 14px;
+            border-radius: 8px;
+            display: inline-block;
+            margin-top: 10px;
+        }
+    </style>
 
     @include('components.nav')
 
-    <h1 id="turnTitle"></h1>
+    <main>
+        <h1 id="turnTitle">
+            @if (! $game->isFull())
+                {{ $role === null ? 'Join this game' : 'Waiting for an opponent…' }}
+            @elseif ($game->status === 'finished')
+                Game over
+            @else
+                {{ $isMyTurn ? 'Your turn' : "Opponent's turn" }}
+            @endif
+        </h1>
 
-    @php
-        $svgWidth = 250 + $boardSize * 144;
-        $svgHeight = 200 + $boardSize * 92;
-    @endphp
-
-    <svg width="{{ $svgWidth }}" height="{{ $svgHeight }}">
-        @foreach ($board as $tile)
+        @if (! $game->isFull())
+            @if ($role === null)
+                <form method="POST" action="{{ route('game.join', $game) }}">
+                    @csrf
+                    <x-button type="submit" variant="primary" size="large">
+                        Join this game
+                    </x-button>
+                </form>
+            @else
+                <p>Send this link to a friend:</p>
+                <p class="share-link">{{ route('game.show', $game) }}</p>
+            @endif
+        @else
             @php
-                $x = 100 + $tile['column'] * 96 + $tile['row'] * 48;
-                $y = 100 + $tile['row'] * 92;
+                $svgWidth = 250 + $boardSize * 144;
+                $svgHeight = 200 + $boardSize * 92;
             @endphp
 
-            <polygon
-                points="
-                    {{ $x }},{{ $y - 64 }}
-                    {{ $x + 48 }},{{ $y - 32 }}
-                    {{ $x + 48 }},{{ $y + 32 }}
-                    {{ $x }},{{ $y + 64 }}
-                    {{ $x - 48 }},{{ $y + 32 }}
-                    {{ $x - 48 }},{{ $y - 32 }}
-                "
-                fill="{{ $tile['owner'] === 'player1' ? '#e274d3' : ($tile['owner'] === 'player2' ? '#a97fe6' : 'lightgray') }}"
-                stroke="white" stroke-width="3" data-row="{{ $tile['row'] }}" data-column="{{ $tile['column'] }}"
-                data-owner="{{ $tile['owner'] }}" onClick="hexClicked(this)" />
-        @endforeach
-    </svg>
+            <svg width="{{ $svgWidth }}" height="{{ $svgHeight }}">
+                @foreach ($board as $tile)
+                    @php
+                        $x = 100 + $tile['column'] * 96 + $tile['row'] * 48;
+                        $y = 100 + $tile['row'] * 92;
+                    @endphp
 
+                    <polygon
+                        points="
+                            {{ $x }},{{ $y - 64 }}
+                            {{ $x + 48 }},{{ $y - 32 }}
+                            {{ $x + 48 }},{{ $y + 32 }}
+                            {{ $x }},{{ $y + 64 }}
+                            {{ $x - 48 }},{{ $y + 32 }}
+                            {{ $x - 48 }},{{ $y - 32 }}
+                        "
+                        fill="{{ $tile['owner'] === 'player1' ? '#e274d3' : ($tile['owner'] === 'player2' ? '#a97fe6' : 'lightgray') }}"
+                        stroke="white" stroke-width="3" data-row="{{ $tile['row'] }}" data-column="{{ $tile['column'] }}"
+                        data-owner="{{ $tile['owner'] }}" onClick="hexClicked(this)" />
+                @endforeach
+            </svg>
+        @endif
+    </main>
 
-
-    //working on this shi rn
     <script>
-        //stores tiles on the board   
+        const gameId = {{ $game->id }};
+        const role = @json($role);
+        let isMyTurn = @json($isMyTurn);
+
         const board = [];
-        //fins every polygon and pushes it into the board array with its row, column, owner, and element
         document.querySelectorAll('polygon').forEach(hex => {
-            const tile = {
+            board.push({
                 row: Number(hex.dataset.row),
                 column: Number(hex.dataset.column),
                 owner: hex.dataset.owner || null,
-                element: hex
-
-            };
-            board.push(tile);
+                element: hex,
+            });
         });
 
-
-
-        let currentPlayer = 'player1';
-
         async function hexClicked(hexElement) {
-            const tile = board.find(hex => hex.element === hexElement);
-
-            if (tile.owner !== null) {
-                alert('This tile is already owned!');
+            if (!role || !isMyTurn) {
                 return;
             }
 
-            const response = await fetch('/game/move', {
+            const tile = board.find(hex => hex.element === hexElement);
+
+            if (tile.owner !== null) {
+                return;
+            }
+
+            const response = await fetch(`/game/${gameId}/move`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -86,48 +113,34 @@
                 },
                 body: JSON.stringify({
                     row: tile.row,
-                    column: tile.column,
-                    player: currentPlayer
+                    column: tile.column
                 })
             });
 
+            const title = document.getElementById('turnTitle');
+
             if (!response.ok) {
-                const error = await response.text();
-                document.open();
-                document.write(error);
-                document.close();
+                const error = await response.json().catch(() => null);
+                alert(error?.message || 'Something went wrong.');
                 return;
             }
 
             const data = await response.json();
 
-            tile.owner = currentPlayer;
+            tile.owner = role;
 
             hexElement.setAttribute(
                 'fill',
-                currentPlayer === 'player1' ? '#e274d3' : '#a97fe6'
+                role === 'player1' ? '#e274d3' : '#a97fe6'
             );
 
             if (data.winner) {
-                alert(currentPlayer + ' wins!');
-
-                await fetch('/game/reset', {
-                    method: 'POST',
-                    headers: {
-                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
-                    }
-                });
-
-                location.reload();
-                return;
+                isMyTurn = false;
+                title.textContent = 'You win! 🎉';
+            } else {
+                isMyTurn = false;
+                title.textContent = "Opponent's turn";
             }
-
-            currentPlayer = currentPlayer === 'player1' ?
-                'player2' :
-                'player1';
         }
-        updateTurnTitle();
     </script>
-
-
 </x-layout>
