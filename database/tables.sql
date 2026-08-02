@@ -1,10 +1,10 @@
 CREATE TABLE users (
   id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
-  username varchar(50) NOT NULL,
+  name varchar(50) NOT NULL,
   password varchar(255) NOT NULL,
   email varchar(255) NOT NULL,
   isadmin tinyint(1) NOT NULL DEFAULT 0,
-  level int(11) NOT NULL DEFAULT 1,
+  elo int(11) NOT NULL DEFAULT 1200,
   updated_at timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
   created_at timestamp NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
