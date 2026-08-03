@@ -9,13 +9,6 @@ class GameController extends Controller
 {
     public $BoardSize = 7;
 
-    public function lobby(Request $request)
-    {
-        // Placeholder — nothing links here yet. Real "browse open games"
-        // UI is a separate feature; for now just send people back.
-        return redirect()->route('home');
-    }
-
     public function create(Request $request)
     {
         $game = Game::createForPlayer($request->user()->id, $this->BoardSize);
@@ -46,7 +39,7 @@ class GameController extends Controller
             'game' => $game,
             'board' => $game->board,
             'boardSize' => $game->boardSize(),
-            'role' => $role, // 'player1', 'player2', or null if just a visitor with the link
+            'role' => $role, // Null is Not player
             'isMyTurn' => $game->status === 'active' && $game->current_turn === $userId,
         ]);
     }

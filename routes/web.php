@@ -26,10 +26,7 @@ Route::get('/profile', function () {
     return view('profile');
 })->name('profile');
 
-// Everything game-related now requires a logged-in user, since moves
-// are tied to auth()->id() rather than a client-supplied 'player' value.
 Route::middleware('auth')->group(function () {
-
     // Lobby: list open games waiting for an opponent + a "new game" button.
     Route::get('/game', [GameController::class, 'lobby'])->name('game.lobby');
 

@@ -27,7 +27,7 @@
 
     <main>
         <h1 id="turnTitle">
-            @if (! $game->isFull())
+            @if (!$game->isFull())
                 {{ $role === null ? 'Join this game' : 'Waiting for an opponent…' }}
             @elseif ($game->status === 'finished')
                 Game over
@@ -36,7 +36,7 @@
             @endif
         </h1>
 
-        @if (! $game->isFull())
+        @if (!$game->isFull())
             @if ($role === null)
                 <form method="POST" action="{{ route('game.join', $game) }}">
                     @csrf
@@ -71,8 +71,9 @@
                             {{ $x - 48 }},{{ $y - 32 }}
                         "
                         fill="{{ $tile['owner'] === 'player1' ? '#e274d3' : ($tile['owner'] === 'player2' ? '#a97fe6' : 'lightgray') }}"
-                        stroke="white" stroke-width="3" data-row="{{ $tile['row'] }}" data-column="{{ $tile['column'] }}"
-                        data-owner="{{ $tile['owner'] }}" onClick="hexClicked(this)" />
+                        stroke="white" stroke-width="3" data-row="{{ $tile['row'] }}"
+                        data-column="{{ $tile['column'] }}" data-owner="{{ $tile['owner'] }}"
+                        onClick="hexClicked(this)" />
                 @endforeach
             </svg>
         @endif
@@ -136,7 +137,7 @@
 
             if (data.winner) {
                 isMyTurn = false;
-                title.textContent = 'You win! 🎉';
+                title.textContent = 'You win!';
             } else {
                 isMyTurn = false;
                 title.textContent = "Opponent's turn";
