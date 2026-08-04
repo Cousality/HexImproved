@@ -13,7 +13,7 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('users', function (Blueprint $table) {
+        /*Schema::create('users', function (Blueprint $table) {
             $table->increments('id');
             $table->string('username', 50);
             $table->string('password');
@@ -23,6 +23,8 @@ return new class extends Migration
             $table->timestamp('updated_at')->useCurrentOnUpdate()->useCurrent();
             $table->timestamp('created_at')->useCurrent();
         });
+        */
+        // Users table already exists.
     }
 
     /**
@@ -32,6 +34,7 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('users');
+        //Schema::dropIfExists('users');
+        // Do not delete the existing users table.
     }
 };

@@ -13,16 +13,11 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('games', function (Blueprint $table) {
-            $table->increments('id');
-            $table->unsignedInteger('player1_id')->index('fk_games_player1');
-            $table->unsignedInteger('player2_id')->nullable()->index('fk_games_player2');
-            $table->json('board');
-            $table->unsignedInteger('current_turn')->index('fk_games_current_turn');
-            $table->unsignedInteger('winner_id')->nullable()->index('fk_games_winner');
-            $table->enum('status', ['waiting', 'active', 'finished'])->default('waiting');
-            $table->timestamp('created_at')->nullable()->useCurrent();
-            $table->timestamp('updated_at')->useCurrentOnUpdate()->nullable()->useCurrent();
+        Schema::table('games', function (Blueprint $table) {
+             $table->json('board')->nullable();
+             $table->unsignedInteger('current_turn')->nullable();
+             $table->enum('status', ['waiting', 'active', 'finished'])
+                ->default('waiting');
         });
     }
 
@@ -33,6 +28,12 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('games');
+        Schema::table('games', function (Blueprint $table) {
+        $table->dropColumn([
+            'board',
+            'current_turn',
+            'status',
+        ]);
+    });
     }
 };

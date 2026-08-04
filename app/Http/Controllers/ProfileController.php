@@ -22,4 +22,21 @@ class ProfileController extends Controller
             
             return view('profile', [ 'gamesPlayed' => $gamesPlayed, 'wins' => $wins, 'losses' => $losses, ]);
     }
+    public function updatePicture(Request $request){
+        $request->validate([
+            'profile_picture' => 'required|image|mimes:jpg,jpeg,png,webp|max:2048',
+        ]);
+        //validates the image file to ensure it is an image and meets the specified requirements.
+        $path = $request->file('profile_picture')->store('profile-pictures', 'public');
+        //stores the uploaded image in the 'profile-pictures' directory within the public storage disk and returns the path to the stored file.
+        $user = auth()->user();
+
+        $user->profile_picture = $path;
+
+        $user->save();
+
+        return redirect()->route('profile');
+
+
+    }
 }

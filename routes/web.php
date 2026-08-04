@@ -34,3 +34,6 @@ Route::post('/game/reset', [GameController::class, 'reset'])->name('game.reset')
 
 Route::get('/profile', [ProfileController::class, 'show'])
     ->name('profile');
+
+Route::post('/profile/picture', [ProfileController::class, 'updatePicture'])
+    ->name('profile.picture');
