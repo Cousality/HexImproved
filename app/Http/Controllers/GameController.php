@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Events\GameMoveMade;
 use App\Models\Game;
 use Illuminate\Http\Request;
 
@@ -181,6 +182,14 @@ class GameController extends Controller
         }
 
         $game->save();
+
+        broadcast(new GameMoveMade(
+            $game,
+            $validated['row'],
+            $validated['column'],
+            $role,
+            $won
+        ));
 
         return response()->json([
             'row' => $validated['row'],

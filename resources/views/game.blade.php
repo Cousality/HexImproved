@@ -84,6 +84,7 @@
         const role = @json($role);
         let isMyTurn = @json($isMyTurn);
 
+
         const board = [];
         document.querySelectorAll('polygon').forEach(hex => {
             board.push({
@@ -92,6 +93,47 @@
                 owner: hex.dataset.owner || null,
                 element: hex,
             });
+        });
+
+        document.addEventListener('DOMContentLoaded', () => {
+            if (!window.Echo) {
+                console.error('Laravel Echo was not loaded.');
+                return;
+            }
+
+            window.Echo.private(`games.${gameId}`)
+                .listen('GameMoveMade', (event) => {
+                    console.log('Move received:', event);
+
+                    const tile = board.find(tile =>
+                        tile.row === Number(event.row) &&
+                        tile.column === Number(event.column)
+                    );
+
+                    if (!tile) {
+                        return;
+                    }
+
+                    tile.owner = event.role;
+                    tile.element.dataset.owner = event.role;
+
+                    tile.element.setAttribute(
+                        'fill',
+                        event.role === 'player1' ? '#e274d3' : '#a97fe6'
+                    );
+
+                    const title = document.getElementById('turnTitle');
+
+                    if (event.winner) {
+                        isMyTurn = false;
+                        title.textContent =
+                            event.winner === role ? 'You win!' : 'Opponent wins!';
+                    } else {
+                        isMyTurn = event.nextRole === role;
+                        title.textContent =
+                            isMyTurn ? 'Your turn' : "Opponent's turn";
+                    }
+                });
         });
 
         async function hexClicked(hexElement) {
