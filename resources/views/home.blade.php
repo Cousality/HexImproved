@@ -1,4 +1,4 @@
- <x-layout>
+<x-layout>
      <style>
          :root {
              --bg-dark: #2d133a;
@@ -37,6 +37,7 @@
          .play-buttons {
              display: flex;
              gap: 20px;
+             align-items: center;
          }
      </style>
 
@@ -46,13 +47,16 @@
          <main>
              <h1>Play</h1>
              <div class="play-buttons">
-                 <x-button :href="route('game')" variant="secondary" size="large">
+                 <x-button href="#" variant="secondary" size="large">
                      Play vs AI
                  </x-button>
-                 <x-button :href="route('game')" variant="primary" size="large">
-                     Friendly
-                 </x-button>
 
+                 <form method="POST" action="{{ route('game.create') }}">
+                     @csrf
+                     <x-button type="submit" variant="primary" size="large">
+                         Friendly
+                     </x-button>
+                 </form>
              </div>
          </main>
      </body>

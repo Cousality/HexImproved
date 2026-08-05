@@ -3,17 +3,11 @@
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\GameController;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\ProfileController;
 
 /*
 |--------------------------------------------------------------------------
 | Web Routes
 |--------------------------------------------------------------------------
-|
-| Here is where you can register web routes for your application. These
-| routes are loaded by the RouteServiceProvider within a group which
-| contains the "web" middleware group. Now create something great!
-|
 */
 
 Route::get('/', function () {
@@ -28,12 +22,22 @@ Route::post('/login', [AuthController::class, 'login'])->name('login.submit');
 
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
-Route::get('/game', [GameController::class, 'show'])->name('game');
-Route::post('/game/move', [GameController::class, 'move'])->name('game.move');
-Route::post('/game/reset', [GameController::class, 'reset'])->name('game.reset');
+Route::get('/profile', function () {
+    return view('profile');
+})->name('profile');
 
-Route::get('/profile', [ProfileController::class, 'show'])
-    ->name('profile');
+Route::middleware('auth')->group(function () {
+    // Lobby: list open games waiting for an opponent + a "new game" button.
+    Route::get('/game', [GameController::class, 'lobby'])->name('game.lobby');
 
-Route::post('/profile/picture', [ProfileController::class, 'updatePicture'])
-    ->name('profile.picture');
+    // Create a new game; current user becomes player1.
+    Route::post('/game', [GameController::class, 'create'])->name('game.create');
+
+    // Fill the player2 slot on an open game.
+    Route::post('/game/{game}/join', [GameController::class, 'join'])->name('game.join');
+
+    // {game} is route-model-bound to App\Models\Game via its id.
+    Route::get('/game/{game}', [GameController::class, 'show'])->name('game.show');
+    Route::post('/game/{game}/move', [GameController::class, 'move'])->name('game.move');
+    Route::post('/game/{game}/reset', [GameController::class, 'reset'])->name('game.reset');
+});
