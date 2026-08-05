@@ -8,6 +8,10 @@
 
         <p>ELO: {{ auth()->user()->elo }}</p>
 
+        <p>Wins: {{ $wins }}</p>
+        
+        <p>Losses: {{ $losses }}</p>
+
         {{-- Gets the logged-in user's ELO --}}
     @else
         <p>You need to log in to view your profile.</p>
