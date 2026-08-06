@@ -11,6 +11,7 @@
 
         main h1 {
             font-size: 2.2rem;
+            letter-spacing: 2px;
             margin-bottom: 30px;
         }
 

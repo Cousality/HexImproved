@@ -8,6 +8,15 @@
     --radius: 16px;
 }
 
+body {
+    background-color: var(--bg-dark);
+    color: var(--accent-light);
+    font-family: "Fredoka", sans-serif;
+    line-height: 1.6;
+    overflow-x: hidden;
+}
+
+/*Butttons*/
 .hexed-button {
     display: inline-flex;
     min-height: 48px;
@@ -80,4 +89,90 @@
     min-height: 80px;
     padding-inline: 40px;
     font-size: 20px;
+}
+
+.mode-card:hover {
+    transform: translateY(-5px);
+    border-color: rgba(246, 233, 153, 0.34);
+    box-shadow: 0 28px 70px rgba(18, 7, 24, 0.3);
+}
+
+.mode-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1.25rem;
+    text-align: left;
+}
+
+.mode-card {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    min-height: 315px;
+    padding: 1.8rem;
+    border: 1px solid rgba(253, 229, 217, 0.12);
+    border-radius: var(--radius);
+    box-shadow: 0 22px 60px rgba(18, 7, 24, 0.2);
+    overflow: hidden;
+    transition:
+        transform 0.25s ease,
+        border-color 0.25s ease,
+        box-shadow 0.25s ease;
+}
+
+.mode-icon {
+    display: grid;
+    place-items: center;
+    width: 58px;
+    height: 64px;
+    margin-bottom: 1.45rem;
+    color: var(--bg-dark);
+    clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+}
+
+.mode-icon svg {
+    width: 25px;
+    height: 25px;
+    stroke: currentColor;
+}
+
+.mode-icon.ai {
+    background: var(--player-2);
+}
+
+.mode-icon.friendly {
+    background: var(--player-1);
+}
+
+.mode-kicker {
+    margin: 0 0 0.4rem;
+    color: var(--text-yellow);
+    font-size: 0.72rem;
+    font-weight: 800;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+}
+
+.mode-title {
+    margin: 0;
+    color: var(--accent-light);
+    font-family: "Fredoka", sans-serif;
+    font-size: 1.65rem;
+    font-weight: 600;
+}
+
+.mode-copy {
+    margin: 0.55rem 0 1.55rem;
+    color: rgba(253, 229, 217, 0.65);
+    font-size: 0.92rem;
+}
+
+.mode-action {
+    position: relative;
+    z-index: 1;
+    margin-top: auto;
+}
+
+.mode-action form {
+    margin: 0;
 }
