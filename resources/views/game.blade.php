@@ -83,6 +83,7 @@
     <script>
         const gameId = {{ $game->id }};
         const role = @json($role);
+        const isGameFull = @json($game->isFull());
         let isMyTurn = @json($isMyTurn);
 
 
@@ -103,6 +104,13 @@
             }
 
             window.Echo.private(`games.${gameId}`)
+                .listen('GamePlayerJoined', (event) => {
+                    console.log('Player joined:', event);
+
+                    if (!isGameFull) {
+                        window.location.reload();
+                    }
+                })
                 .listen('GameMoveMade', (event) => {
                     console.log('Move received:', event);
 

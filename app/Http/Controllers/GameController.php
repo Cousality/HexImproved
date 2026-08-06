@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Events\GameMoveMade;
+use App\Events\GamePlayerJoined;
 use App\Models\Game;
 use Illuminate\Http\Request;
 
@@ -27,6 +28,8 @@ class GameController extends Controller
         $game->player2_id = $request->user()->id;
         $game->status = 'active';
         $game->save();
+
+        broadcast(new GamePlayerJoined($game));
 
         return redirect()->route('game.show', $game);
     }
