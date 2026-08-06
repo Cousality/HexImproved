@@ -1,50 +1,38 @@
 <x-layout>
     @include('components.nav')
 
-    <div class="min-h-screen flex items-center justify-center bg-gray-100">
+    <x-auth-card title="Login">
 
-        <div class="bg-white shadow-lg rounded-xl p-8 w-full max-w-md">
+        <form action="" method="POST">
 
-            <h1 class="text-3xl font-bold text-center mb-6">
+            @csrf
+
+            <div class="auth-field">
+                <label class="auth-label">
+                    Email
+                </label>
+
+                <input type="email" name="email" class="auth-input" placeholder="Enter email">
+            </div>
+
+            <div class="auth-field">
+                <label class="auth-label">
+                    Password
+                </label>
+
+                <input type="password" name="password" class="auth-input" placeholder="Enter password">
+            </div>
+
+            <button type="submit" class="hexed-button hexed-button--primary auth-submit">
                 Login
-            </h1>
+            </button>
 
-            <form action="" method="POST" class="space-y-4">
+        </form>
 
-                @csrf
+        <x-slot:footer>
+            Don't have an account? <a href="/register">Sign up</a>
+        </x-slot:footer>
 
-
-
-                <div>
-                    <label class="block mb-1 font-medium">
-                        Email
-                    </label>
-
-                    <input type="email" name="email" class="w-full border rounded-lg p-3" placeholder="Enter email">
-                </div>
-
-
-                <div>
-                    <label class="block mb-1 font-medium">
-                        Password
-                    </label>
-
-                    <input type="password" name="password" class="w-full border rounded-lg p-3"
-                        placeholder="Enter password">
-                </div>
-
-
-
-
-                <button type="submit" class="w-full bg-blue-600 text-white p-3 rounded-lg hover:bg-blue-700">
-                    Login
-                </button>
-
-            </form>
-
-
-        </div>
-
-    </div>
+    </x-auth-card>
 
 </x-layout>
