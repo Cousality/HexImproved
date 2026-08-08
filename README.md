@@ -4,13 +4,13 @@ Hex is a web-based game built using the Laravel PHP framework. The project combi
 
 ## Features
 
--Browser-based gameplay
--Built with Laravel and PHP
--Interactive game mechanics
--Responsive web interface
--Backend game logic and data management
--Laravel routing and controllers
--Structured using Laravel's MVC architecture
+- Browser-based gameplay
+- Built with Laravel and PHP
+- Interactive game mechanics
+- Responsive web interface
+- Backend game logic and data management
+- Laravel routing and controllers
+- Structured using Laravel's MVC architecture
 ## Purpose 
 Hex is primarily a learning and portfolio project demonstrating the use of Laravel and Pusher to create a real-time application where two users can interact with each other and receive immediate updates.
 ## Tech Stack
@@ -36,8 +36,8 @@ npm run dev:all
 
 ## Contributors
 
-Cousality - https://github.com/Cousality
-AdrianaSveca - https://github.com/AdrianaSveca
+- Cousality - https://github.com/Cousality
+- AdrianaSveca - https://github.com/AdrianaSveca
 
 ## License
 
