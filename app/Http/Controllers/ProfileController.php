@@ -19,9 +19,19 @@ class ProfileController extends Controller
             ->count();
             
             $losses = $gamesPlayed - $wins;
+
+            $previousGames = Game::where('player1_id', $user->id)
+            ->orWhere('player2_id', $user->id)
+            ->paginate(5); // Adjust the number of games per page as needed
             
-            return view('profile', [ 'gamesPlayed' => $gamesPlayed, 'wins' => $wins, 'losses' => $losses, ]);
+            return view('profile', [ 'gamesPlayed' => $gamesPlayed, 'wins' => $wins, 'losses' => $losses, 'previousGames' => $previousGames ]);
     }
+
+
+
+
+
+
     public function updatePicture(Request $request){
         $request->validate([
             'profile_picture' => 'required|image|mimes:jpg,jpeg,png,webp|max:2048',
@@ -39,4 +49,25 @@ class ProfileController extends Controller
 
 
     }
+
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 }
