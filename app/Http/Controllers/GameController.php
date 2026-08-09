@@ -2,47 +2,53 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
+use App\Events\GameMoveMade;
+use App\Events\GamePlayerJoined;
 use App\Models\Game;
+use Illuminate\Http\Request;
 
 class GameController extends Controller
 {
     public $BoardSize = 7;
 
-    public $Board = [];
-
-    public function show(Request $request)
+    public function create(Request $request)
     {
-        if (! $request->session()->has('board')) {
-            $request->session()->put('board', $this->createBoard());
+        $game = Game::createForPlayer($request->user()->id, $this->BoardSize);
+
+        return redirect()->route('game.show', $game);
+    }
+
+    public function join(Request $request, Game $game)
+    {
+        // Ignore if already full, or the visitor is already player1.
+        if ($game->isFull() || $game->player1_id === $request->user()->id) {
+            return redirect()->route('game.show', $game);
         }
 
-        $this->Board = $request->session()->get('board');
+        $game->player2_id = $request->user()->id;
+        $game->status = 'active';
+        $game->save();
+
+        broadcast(new GamePlayerJoined($game));
+
+        return redirect()->route('game.show', $game);
+    }
+
+    public function show(Request $request, Game $game)
+    {
+        $userId = $request->user()->id;
+        $role = $game->playerNumber($userId);
 
         return view('game', [
-            'board' => $this->Board,
-            'boardSize' => $this->BoardSize,
+            'game' => $game,
+            'board' => $game->board,
+            'boardSize' => $game->boardSize(),
+            'role' => $role, // Null is Not player
+            'isMyTurn' => $game->status === 'active' && $game->current_turn === $userId,
         ]);
     }
 
-    private function createBoard()
-    {
-        $board = [];
-
-        for ($row = 0; $row < $this->BoardSize; $row++) {
-            for ($column = 0; $column < $this->BoardSize; $column++) {
-                $board[] = [
-                    'row' => $row,
-                    'column' => $column,
-                    'owner' => null,
-                ];
-            }
-        }
-
-        return $board;
-    }
-
-    private function neighbours(int $row, int $column): array
+    private function neighbours(int $row, int $column, int $boardSize): array
     {
         $directions = [
             [-1, 0],
@@ -59,8 +65,8 @@ class GameController extends Controller
             $neighbourRow = $row + $direction[0];
             $neighbourColumn = $column + $direction[1];
 
-            if ($neighbourRow >= 0 && $neighbourRow < $this->BoardSize &&
-                $neighbourColumn >= 0 && $neighbourColumn < $this->BoardSize) {
+            if ($neighbourRow >= 0 && $neighbourRow < $boardSize &&
+                $neighbourColumn >= 0 && $neighbourColumn < $boardSize) {
                 $neighbours[] = ['row' => $neighbourRow, 'column' => $neighbourColumn];
             }
         }
@@ -68,113 +74,146 @@ class GameController extends Controller
         return $neighbours;
     }
 
-private function checkWin(string $player): bool
-{
-    $tilesToCheck = [];
-    $visited = [];
+    private function checkWin(array $board, int $boardSize, string $player): bool
+    {
+        $tilesToCheck = [];
+        $visited = [];
 
-    if ($player === 'player1') {
-        foreach ($this->Board as $tile) {
-            if ($tile['row'] === 0 && $tile['owner'] === $player) {
-                $tilesToCheck[] = $tile;
-            }
-        }
-    } else {
-        foreach ($this->Board as $tile) {
-            if ($tile['column'] === 0 && $tile['owner'] === $player) {
-                $tilesToCheck[] = $tile;
-            }
-        }
-    }
-
-    while (! empty($tilesToCheck)) {
-        $currentTile = array_pop($tilesToCheck);
-
-        $key = $currentTile['row'].'-'.$currentTile['column'];
-
-        if (in_array($key, $visited)) {
-            continue;
-        }
-
-        $visited[] = $key;
-
-        if (
-            $player === 'player1' &&
-            $currentTile['row'] === $this->BoardSize - 1
-        ) {
-            return true;
-        }
-
-        if (
-            $player === 'player2' &&
-            $currentTile['column'] === $this->BoardSize - 1
-        ) {
-            return true;
-        }
-
-        foreach ($this->neighbours(
-            $currentTile['row'],
-            $currentTile['column']
-        ) as $neighbour) {
-            foreach ($this->Board as $tile) {
-                if (
-                    $tile['row'] === $neighbour['row'] &&
-                    $tile['column'] === $neighbour['column'] &&
-                    $tile['owner'] === $player
-                ) {
+        if ($player === 'player1') {
+            foreach ($board as $tile) {
+                if ($tile['row'] === 0 && $tile['owner'] === $player) {
                     $tilesToCheck[] = $tile;
-                    break;
+                }
+            }
+        } else {
+            foreach ($board as $tile) {
+                if ($tile['column'] === 0 && $tile['owner'] === $player) {
+                    $tilesToCheck[] = $tile;
                 }
             }
         }
-    }
 
-    return false;
-}
+        while (! empty($tilesToCheck)) {
+            $currentTile = array_pop($tilesToCheck);
 
-    public function move(Request $request)
-    {
-        $this->Board = $request->session()->get('board', $this->createBoard());
-        $validated = $request->validate([
-            'row' => 'required|integer|min:0|max:'.($this->BoardSize - 1),
-            'column' => 'required|integer|min:0|max:'.($this->BoardSize - 1),
-            'player' => 'required|in:player1,player2',
-        ]);
+            $key = $currentTile['row'].'-'.$currentTile['column'];
 
-        // Process the validated move
+            if (in_array($key, $visited)) {
+                continue;
+            }
 
-        $row = $validated['row'];
-        $column = $validated['column'];
-        $player = $validated['player'];
+            $visited[] = $key;
 
-        foreach ($this->Board as &$tile) {
-            if ($tile['row'] === $row && $tile['column'] === $column) {
-                $tile['owner'] = $player;
-                break;
+            if ($player === 'player1' && $currentTile['row'] === $boardSize - 1) {
+                return true;
+            }
+
+            if ($player === 'player2' && $currentTile['column'] === $boardSize - 1) {
+                return true;
+            }
+
+            foreach ($this->neighbours($currentTile['row'], $currentTile['column'], $boardSize) as $neighbour) {
+                foreach ($board as $tile) {
+                    if (
+                        $tile['row'] === $neighbour['row'] &&
+                        $tile['column'] === $neighbour['column'] &&
+                        $tile['owner'] === $player
+                    ) {
+                        $tilesToCheck[] = $tile;
+                        break;
+                    }
+                }
             }
         }
 
+        return false;
+    }
+
+    public function move(Request $request, Game $game)
+    {
+        $userId = $request->user()->id;
+        $role = $game->playerNumber($userId);
+
+        if ($role === null) {
+            abort(403, 'You are not a player in this game.');
+        }
+
+        if ($game->status !== 'active') {
+            abort(422, 'This game is not active.');
+        }
+
+        if ($game->current_turn !== $userId) {
+            abort(422, "It's not your turn.");
+        }
+
+        $boardSize = $game->boardSize();
+
+        $validated = $request->validate([
+            'row' => 'required|integer|min:0|max:'.($boardSize - 1),
+            'column' => 'required|integer|min:0|max:'.($boardSize - 1),
+        ]);
+
+        $board = $game->board;
+        $found = false;
+
+        foreach ($board as &$tile) {
+            if ($tile['row'] === $validated['row'] && $tile['column'] === $validated['column']) {
+                if ($tile['owner'] !== null) {
+                    abort(422, 'That tile is already taken.');
+                }
+
+                $tile['owner'] = $role;
+                $found = true;
+                break;
+            }
+        }
         unset($tile);
 
-        $request->session()->put('board', $this->Board);
+        if (! $found) {
+            abort(422, 'Invalid tile.');
+        }
 
-        $winner = $this->checkWin($player);
+        $game->board = $board;
+
+        $won = $this->checkWin($board, $boardSize, $role);
+
+        if ($won) {
+            $game->status = 'finished';
+            $game->winner_id = $userId;
+        } else {
+            $game->current_turn = $game->opponentId($userId);
+        }
+
+        $game->save();
+
+        broadcast(new GameMoveMade(
+            $game,
+            $validated['row'],
+            $validated['column'],
+            $role,
+            $won
+        ));
 
         return response()->json([
-            'message' => 'Move processed successfully',
-            'row' => $row,
-            'column' => $column,
-            'player' => $player,
-            'winner' => $winner,
+            'row' => $validated['row'],
+            'column' => $validated['column'],
+            'role' => $role,
+            'winner' => $won,
         ]);
     }
 
-    public function reset(Request $request)
+    public function reset(Request $request, Game $game)
     {
-        $request->session()->forget('board');
+        if ($game->player1_id !== $request->user()->id && $game->player2_id !== $request->user()->id) {
+            abort(403);
+        }
 
-        return response()->json([
-            'message' => 'Game reset',
-        ]);
+        $game->board = Game::emptyBoard($game->boardSize());
+        $game->current_turn = $game->player1_id;
+        $game->status = $game->isFull() ? 'active' : 'waiting';
+        $game->winner_id = null;
+        $game->save();
+
+        return response()->json(['message' => 'Game reset']);
     }
 }

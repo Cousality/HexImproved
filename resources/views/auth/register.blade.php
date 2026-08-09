@@ -1,74 +1,54 @@
 <x-layout>
     @include('components.nav')
 
-    <div class="min-h-screen flex items-center justify-center bg-gray-100">
+    <x-auth-card title="Create an Account">
 
-        <div class="bg-white shadow-lg rounded-xl p-8 w-full max-w-md">
+        <form action="" method="POST">
 
-            <h1 class="text-3xl font-bold text-center mb-6">
-                Create an Account
-            </h1>
+            @csrf
 
-            <form action="" method="POST" class="space-y-4">
+            <div class="auth-field">
+                <label class="auth-label">
+                    Name
+                </label>
 
-                @csrf
+                <input type="text" name="name" class="auth-input" placeholder="Enter name">
+            </div>
 
-                <div>
-                    <label class="block mb-1 font-medium">
-                        Name
-                    </label>
+            <div class="auth-field">
+                <label class="auth-label">
+                    Email
+                </label>
 
-                    <input type="text" name="name" class="w-full border rounded-lg p-3"
-                        placeholder="Enter name">
-                </div>
+                <input type="email" name="email" class="auth-input" placeholder="Enter email">
+            </div>
 
+            <div class="auth-field">
+                <label class="auth-label">
+                    Password
+                </label>
 
-                <div>
-                    <label class="block mb-1 font-medium">
-                        Email
-                    </label>
+                <input type="password" name="password" class="auth-input" placeholder="Enter password">
+            </div>
 
-                    <input type="email" name="email" class="w-full border rounded-lg p-3" placeholder="Enter email">
-                </div>
+            <div class="auth-field">
+                <label class="auth-label">
+                    Confirm Password
+                </label>
 
+                <input type="password" name="password_confirmation" class="auth-input" placeholder="Confirm password">
+            </div>
 
-                <div>
-                    <label class="block mb-1 font-medium">
-                        Password
-                    </label>
+            <button type="submit" class="hexed-button hexed-button--primary auth-submit">
+                Register
+            </button>
 
-                    <input type="password" name="password" class="w-full border rounded-lg p-3"
-                        placeholder="Enter password">
-                </div>
+        </form>
 
+        <x-slot:footer>
+            Already have an account? <a href="/login">Login here</a>
+        </x-slot:footer>
 
-                <div>
-                    <label class="block mb-1 font-medium">
-                        Confirm Password
-                    </label>
-
-                    <input type="password" name="password_confirmation" class="w-full border rounded-lg p-3"
-                        placeholder="Confirm password">
-                </div>
-
-
-                <button type="submit" class="w-full bg-blue-600 text-white p-3 rounded-lg hover:bg-blue-700">
-                    Register
-                </button>
-
-            </form>
-
-
-            <p class="text-center mt-4 text-sm">
-                Already have an account?
-
-                <a href="/login" class="text-blue-600 hover:underline">
-                    Login here
-                </a>
-            </p>
-
-        </div>
-
-    </div>
+    </x-auth-card>
 
 </x-layout>

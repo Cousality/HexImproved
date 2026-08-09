@@ -40,13 +40,6 @@
          text-decoration: none;
      }
 
-
-
-     body {
-         font-family: Arial, Helvetica, sans-serif;
-         color: #f6e999;
-     }
-
      nav {
          display: flex;
          gap: 2rem;

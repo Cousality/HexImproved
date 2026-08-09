@@ -1,5 +1,6 @@
 <?php
 
+use App\Models\Game;
 use Illuminate\Support\Facades\Broadcast;
 
 /*
@@ -13,6 +14,7 @@ use Illuminate\Support\Facades\Broadcast;
 |
 */
 
-Broadcast::channel('App.Models.User.{id}', function ($user, $id) {
-    return (int) $user->id === (int) $id;
+Broadcast::channel('games.{game}', function ($user, Game $game) {
+    return (int) $user->id === (int) $game->player1_id
+        || (int) $user->id === (int) $game->player2_id;
 });
