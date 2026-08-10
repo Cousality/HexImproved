@@ -3,6 +3,7 @@
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\GameController;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\ProfileController;
 
 /*
 |--------------------------------------------------------------------------
@@ -41,3 +42,7 @@ Route::middleware('auth')->group(function () {
     Route::post('/game/{game}/move', [GameController::class, 'move'])->name('game.move');
     Route::post('/game/{game}/reset', [GameController::class, 'reset'])->name('game.reset');
 });
+
+
+Route::post('/profile/picture', [ProfileController::class, 'updatePicture'])
+    ->name('profile.picture');

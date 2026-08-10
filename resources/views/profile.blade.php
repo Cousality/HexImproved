@@ -44,17 +44,17 @@
             <div class="profile-stats">
 
                 <div>
-                    <h2>{{ $gamesPlayed }}</h2>
+                    <h2>1 </h2>
                     <p>Games Played</p>
                 </div>
 
                 <div>
-                    <h2>{{ $wins }}</h2>
+                    <h2>2</h2>
                     <p>Wins</p>
                 </div>
 
                 <div>
-                    <h2>{{ $losses }}</h2>
+                    <h2>0</h2>
                     <p>Losses</p>
                 </div>
             </div>
@@ -63,7 +63,7 @@
 
                 <h2>Previous Games</h2>
 
-                @foreach($previousGames as $game)
+                {{-- @foreach($previousGames as $game)
 
                     <div class="game-card">
 
@@ -96,6 +96,7 @@
 
 
 
+
                 @endforeach
                 <div class="pagination">
 
@@ -113,6 +114,7 @@
 
             </div>
         </div>
+        --}}
 
         {{-- Gets the logged-in user's ELO --}}
     @else
