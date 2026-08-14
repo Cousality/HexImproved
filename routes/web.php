@@ -23,10 +23,6 @@ Route::post('/login', [AuthController::class, 'login'])->name('login.submit');
 
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
-Route::get('/profile', function () {
-    return view('profile');
-})->name('profile');
-
 Route::middleware('auth')->group(function () {
     // Lobby: list open games waiting for an opponent + a "new game" button.
     Route::get('/game', [GameController::class, 'lobby'])->name('game.lobby');
@@ -43,6 +39,8 @@ Route::middleware('auth')->group(function () {
     Route::post('/game/{game}/reset', [GameController::class, 'reset'])->name('game.reset');
 });
 
+Route::get('/profile', [ProfileController::class, 'show'])
+    ->name('profile');
 
 Route::post('/profile/picture', [ProfileController::class, 'updatePicture'])
     ->name('profile.picture');
