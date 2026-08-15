@@ -7,8 +7,9 @@
     --player-2: #a97fe6;
     --radius: 16px;
 }
+
 body {
-   background-color: var(--bg-dark);
+    background-color: var(--bg-dark);
 }
 
 body {
@@ -102,33 +103,121 @@ body {
     font-family: "Courier New", monospace;
 
 }
-.profile-header {
-    background-color: var(--bg-dark);
-    display:flex;
-    align-items: center;
-    gap: 40px;
-    padding-left: 40px;
-    font-family: "Courier New", monospace;
-    margin-top: 50px;
-    margin-bottom: 50px;
-    justify-content: center;
-}
-.profile-picture img {
-    border-radius: 100%;
-    object-fit: cover;
 
-}
-.profile-stats {
-    margin: 20px;
-    padding: 24px;
+.profile-header {
     display: flex;
     align-items: center;
-    gap: 70px;
     justify-content: center;
-    font-size: 25px;
-   
+    gap: 30px;
+    margin-top: 50px;
+    margin-bottom: 50px;
 }
-.game-win{
+
+.profile-name {
+    display: flex;
+    flex-direction: column;
+}
+
+.profile-name h1 {
+    margin: 0;
+    font-size: 36px;
+    font-weight: 800;
+}
+
+#image{
+    display: none;
+}
+
+.profile-picture label {
+    position: relative;
+    display: block;
+
+    width: 100px;
+    height: 100px;
+
+    border-radius: 50%;
+    overflow: hidden;
+
+    color: white;
+    cursor: pointer;
+}
+
+.profile-picture img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    object-fit: cover;
+    transition: filter 0.3s ease;
+
+}
+
+.profile-picture-fallback {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    width: 100%;
+    height: 100%;
+
+    border: 2px solid rgba(246, 233, 153, 0.5);
+    border-radius: 50%;
+
+    background-color: var(--bg-lighter);
+
+    color: var(--text-yellow);
+    font-size: 36px;
+    font-weight: 800;
+
+    box-sizing: border-box;
+    transition: filter 0.3s ease;
+}
+
+.profile-stats {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: fit-content;
+    margin: 20px auto;
+    padding: 24px 40px;
+    font-size: 24px;
+    background-color: rgba(255, 235, 107, 0.5);
+    border: 1px solid rgba(246, 233, 153, 0.9);
+    border-radius: var(--radius);
+    transition:
+        transform 0.25s ease,
+        box-shadow 0.25s ease;
+
+}
+
+.profile-stats:hover {
+    transform: scale(1.01);
+    box-shadow: 0 5px 15px rgba(255, 200, 0, 0.612);
+}
+
+.profile-stats-counters {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    gap: 80px;
+    width: 100%;
+}
+
+.profile-stats-counters>div {
+    text-align: center;
+    flex: 1;
+}
+
+.profile-elo {
+    font-size: 28px;
+    font-weight: 800;
+    margin-bottom: 20px;
+}
+
+.game-win {
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -136,7 +225,8 @@ body {
     background-color: #46634f;
     color: white;
 }
-.game-loss{
+
+.game-loss {
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -144,16 +234,18 @@ body {
     background-color: #c75d5d;
     color: white;
 }
+
 #image {
-    display:none;
-    
+    display: none;
 }
+
 .profile-picture label {
     position: relative;
     display: inline-block;
     cursor: pointer;
     color: rgb(255, 255, 255);
 }
+
 .profile-picture span {
     position: absolute;
     top: 50%;
@@ -162,46 +254,28 @@ body {
     opacity: 0;
 }
 
-.profile-picture label:hover span {
-    opacity: 1;
-}
-.profile-stats div {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    margin-bottom: 10px;
-}
-.profile-games{
+.profile-games {
     margin-top: 150px;
     margin-bottom: 100px;
 }
-.profile-games h2{
+
+.profile-games h2 {
     color: var(--text-yellow);
     text-align: center;
     margin-bottom: 50px;
     font-size: 30px;
 }
-.profile-name h1 {
-    font-size: 36px;
-    font-weight: 800;
-}
-.profile-name p {
-    font-size: 18px;
-    font-weight: 400;
-}
-.profile-name {
-    display: flex;
-    flex-direction: column;
-    margin-left: 100px;
-}
+
 .profile-picture label:hover img {
     filter: brightness(0.6);
     transition: filter 0.3s ease;
 }
+
 .pagination svg {
     width: 20px;
     height: 20px;
 }
+
 .mode-card:hover {
     transform: translateY(-5px);
     border-color: rgba(246, 233, 153, 0.34);

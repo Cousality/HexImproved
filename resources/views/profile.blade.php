@@ -22,41 +22,64 @@
 
                     {{-- Gets the logged-in user's name --}}
 
-                    <p>ELO: {{ auth()->user()->elo }}</p>
                 </div>
                 <div class="profile-picture">
 
                     <form action="{{ route('profile.picture') }}" method="POST" enctype="multipart/form-data">
+
                         @csrf
 
                         <input type="file" id="image" name="profile_picture" accept="image/*" onchange="this.form.submit()">
+
                         <label for="image">
-                            <img src="{{ asset('storage/' . auth()->user()->profile_picture) }}" alt="Profile picture"
-                                width="110" height="110">
+
+                            @if(auth()->user()->profile_picture)
+
+                                <img src="{{ asset('storage/' . auth()->user()->profile_picture) }}" alt="Profile picture">
+
+                            @else
+
+                                <div class="profile-picture-fallback">
+                                    {{ strtoupper(substr(auth()->user()->name, 0, 1)) }}
+                                </div>
+
+                            @endif
 
                             <span>Change Picture</span>
+
                         </label>
+
                     </form>
+
                 </div>
 
             </div>
 
             <div class="profile-stats">
 
-                <div>
-                    <h2>{{ $gamesPlayed }}</h2>
-                    <p>Games Played</p>
+                <div class="profile-elo">
+                    <p>ELO: {{ auth()->user()->elo }}</p>
                 </div>
 
-                <div>
-                    <h2>{{ $wins }}</h2>
-                    <p>Wins</p>
+                <div class="profile-stats-counters">
+
+                    <div>
+                        <h2>{{ $gamesPlayed }}</h2>
+                        <p>Games Played</p>
+                    </div>
+
+                    <div>
+                        <h2>{{ $wins }}</h2>
+                        <p>Wins</p>
+                    </div>
+
+                    <div>
+                        <h2>{{ $losses }}</h2>
+                        <p>Losses</p>
+                    </div>
+
                 </div>
 
-                <div>
-                    <h2>{{ $losses }}</h2>
-                    <p>Losses</p>
-                </div>
             </div>
 
             <div class="profile-games">

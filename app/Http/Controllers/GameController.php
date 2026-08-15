@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Events\GameMoveMade;
 use App\Events\GamePlayerJoined;
 use App\Models\Game;
+use App\Models\User;
 use Illuminate\Http\Request;
 
 class GameController extends Controller
@@ -65,8 +66,10 @@ class GameController extends Controller
             $neighbourRow = $row + $direction[0];
             $neighbourColumn = $column + $direction[1];
 
-            if ($neighbourRow >= 0 && $neighbourRow < $boardSize &&
-                $neighbourColumn >= 0 && $neighbourColumn < $boardSize) {
+            if (
+                $neighbourRow >= 0 && $neighbourRow < $boardSize &&
+                $neighbourColumn >= 0 && $neighbourColumn < $boardSize
+            ) {
                 $neighbours[] = ['row' => $neighbourRow, 'column' => $neighbourColumn];
             }
         }
@@ -93,10 +96,10 @@ class GameController extends Controller
             }
         }
 
-        while (! empty($tilesToCheck)) {
+        while (!empty($tilesToCheck)) {
             $currentTile = array_pop($tilesToCheck);
 
-            $key = $currentTile['row'].'-'.$currentTile['column'];
+            $key = $currentTile['row'] . '-' . $currentTile['column'];
 
             if (in_array($key, $visited)) {
                 continue;
@@ -149,8 +152,8 @@ class GameController extends Controller
         $boardSize = $game->boardSize();
 
         $validated = $request->validate([
-            'row' => 'required|integer|min:0|max:'.($boardSize - 1),
-            'column' => 'required|integer|min:0|max:'.($boardSize - 1),
+            'row' => 'required|integer|min:0|max:' . ($boardSize - 1),
+            'column' => 'required|integer|min:0|max:' . ($boardSize - 1),
         ]);
 
         $board = $game->board;
@@ -169,7 +172,7 @@ class GameController extends Controller
         }
         unset($tile);
 
-        if (! $found) {
+        if (!$found) {
             abort(422, 'Invalid tile.');
         }
 
@@ -180,6 +183,18 @@ class GameController extends Controller
         if ($won) {
             $game->status = 'finished';
             $game->winner_id = $userId;
+            $loserId = $game->opponentId($userId);
+            $winner = User::find($userId);
+            $loser = User::find($loserId);
+            
+            //calculate new elo ratings for winner and loser
+            $k = 32;
+            $expectedWinner = 1 / (1 + pow(10, (($loser->elo - $winner->elo) / 400)));
+            $expectedLoser = 1 / (1 + pow(10, (($winner->elo - $loser->elo) / 400)));
+            $winner->elo = round($winner->elo + $k * (1 - $expectedWinner));
+            $loser->elo = round($loser->elo + $k * (0 - $expectedLoser));
+            $winner->save();
+            $loser->save();
         } else {
             $game->current_turn = $game->opponentId($userId);
         }
