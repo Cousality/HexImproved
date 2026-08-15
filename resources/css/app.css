@@ -124,7 +124,7 @@ body {
     font-weight: 800;
 }
 
-#image{
+#image {
     display: none;
 }
 
@@ -179,10 +179,11 @@ body {
     align-items: center;
     justify-content: center;
     width: fit-content;
-    margin: 20px auto;
+    margin: 70px auto;
+    margin-bottom: 250px;
     padding: 24px 40px;
     font-size: 24px;
-    background-color: rgba(255, 235, 107, 0.5);
+    background-color: rgba(255, 235, 107, 0.178);
     border: 1px solid rgba(246, 233, 153, 0.9);
     border-radius: var(--radius);
     transition:
@@ -193,7 +194,7 @@ body {
 
 .profile-stats:hover {
     transform: scale(1.01);
-    box-shadow: 0 5px 15px rgba(255, 200, 0, 0.612);
+    box-shadow: 0 5px 15px rgba(255, 200, 0, 0.352);
 }
 
 .profile-stats-counters {
@@ -212,9 +213,10 @@ body {
 }
 
 .profile-elo {
-    font-size: 28px;
+    color: var(--text-yellow);
+    font-size: 30px;
     font-weight: 800;
-    margin-bottom: 20px;
+    margin-bottom: 30px;
 }
 
 .game-win {
@@ -224,6 +226,9 @@ body {
     padding: 24px;
     background-color: #46634f;
     color: white;
+    border-radius: var(--radius);
+    margin-bottom: 12px;
+    border: 1px solid rgba(253, 229, 217, 0.12);
 }
 
 .game-loss {
@@ -233,6 +238,9 @@ body {
     padding: 24px;
     background-color: #c75d5d;
     color: white;
+    border-radius: var(--radius);
+    margin-bottom: 12px;
+    border: 1px solid rgba(253, 229, 217, 0.12);
 }
 
 #image {
@@ -252,11 +260,6 @@ body {
     left: 50%;
     transform: translate(-50%, -50%);
     opacity: 0;
-}
-
-.profile-games {
-    margin-top: 150px;
-    margin-bottom: 100px;
 }
 
 .profile-games h2 {
@@ -360,4 +363,27 @@ body {
 
 .mode-action form {
     margin: 0;
+}
+.games-empty {
+    max-width: 500px;
+    margin: 0 auto;
+    padding: 50px 35px;
+
+    background-color: rgba(253, 229, 217, 0.05);
+    border: 1px dashed rgba(246, 234, 153, 0.886);
+    border-radius: var(--radius);
+
+    text-align: center;
+}
+
+.games-empty h3 {
+    margin: 0 0 20px;
+    color: var(--text-yellow);
+    font-size: 18px;
+}
+
+.games-empty p {
+    margin: 20px;
+    color: rgba(253, 229, 217, 0.65);
+    font-size: 13px;
 }

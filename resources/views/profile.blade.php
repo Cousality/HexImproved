@@ -83,21 +83,19 @@
             </div>
 
             <div class="profile-games">
-
                 <h2>Previous Games</h2>
 
-                @foreach($previousGames as $game)
-
-                    <div class="game-card">
+                @forelse($previousGames as $game)
 
                         <div @class([
                             'game-card',
                             'game-win' => $game->winner_id == auth()->user()->id,
                             'game-loss' => $game->winner_id != auth()->user()->id,
                         ])>
-                            @if($game->winner_id == auth()->user()->id)
-                                <p>Win</p>
-                            @else
+
+                    @if($game->winner_id == auth()->user()->id)
+                        <p>Win</p>
+                    @else
                                 <p>Loss</p>
                             @endif
 
@@ -109,17 +107,16 @@
 
                             <p>{{ $game->created_at->format('j M Y') }}</p>
 
-
                         </div>
 
+                @empty
 
-
+                    <div class="games-empty">
+                        <h3>No games yet</h3>
+                        <p>Play some games to see your history here!</p>
                     </div>
 
-
-
-
-                @endforeach
+                @endforelse
                 <div class="pagination">
 
                     @if (!$previousGames->onFirstPage())
