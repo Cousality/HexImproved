@@ -82,32 +82,37 @@
 
             </div>
 
+            <div class="elo-chart">
+                <h2>ELO History</h2>
+                <canvas id="eloChart"></canvas>
+            </div>
+
             <div class="profile-games">
                 <h2>Previous Games</h2>
 
                 @forelse($previousGames as $game)
 
-                        <div @class([
-                            'game-card',
-                            'game-win' => $game->winner_id == auth()->user()->id,
-                            'game-loss' => $game->winner_id != auth()->user()->id,
-                        ])>
+                    <div @class([
+                        'game-card',
+                        'game-win' => $game->winner_id == auth()->user()->id,
+                        'game-loss' => $game->winner_id != auth()->user()->id,
+                    ])>
 
-                    @if($game->winner_id == auth()->user()->id)
-                        <p>Win</p>
-                    @else
-                                <p>Loss</p>
-                            @endif
+                        @if($game->winner_id == auth()->user()->id)
+                            <p>Win</p>
+                        @else
+                            <p>Loss</p>
+                        @endif
 
-                            @if($game->player1_id == auth()->user()->id)
-                                <p>Opponent: {{ $game->player2->name }}</p>
-                            @else
-                                <p>Opponent: {{ $game->player1->name }}</p>
-                            @endif
+                        @if($game->player1_id == auth()->user()->id)
+                            <p>Opponent: {{ $game->player2->name }}</p>
+                        @else
+                            <p>Opponent: {{ $game->player1->name }}</p>
+                        @endif
 
-                            <p>{{ $game->created_at->format('j M Y') }}</p>
+                        <p>{{ $game->created_at->format('j M Y') }}</p>
 
-                        </div>
+                    </div>
 
                 @empty
 
@@ -133,6 +138,65 @@
 
             </div>
         </div>
+        <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+        <script>
+            const eloHistory = @json($eloHistory->pluck('elo'));
+            const eloValues = [1200, ...eloHistory];
+
+            const ctx = document.getElementById('eloChart');
+
+            new Chart(ctx, {
+                type: 'line',
+
+                data: {
+                    labels: eloValues.map((_, index) =>
+                        index === 0 ? 'Start' : `Game ${index}`
+                    ),
+
+                    datasets: [{
+                        label: 'ELO',
+                        data: eloValues,
+                        borderColor: '#f6e999',
+                        backgroundColor: '#f6e999'
+                    }]
+                },
+
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+
+                    scales: {
+                        x: {
+                            ticks: {
+                                color: 'white'
+                            },
+                            grid: {
+                                color: 'rgba(255, 255, 255, 0.2)'
+                            }
+                        },
+
+                        y: {
+                            ticks: {
+                                color: 'white'
+                            },
+                            grid: {
+                                color: 'rgba(255, 255, 255, 0.2)'
+                            }
+                        }
+                    },
+
+                    plugins: {
+                        legend: {
+                            labels: {
+                                color: 'white'
+                            }
+                        }
+                    }
+                }
+            });
+        </script>
+
 
         {{-- Gets the logged-in user's ELO --}}
     @else

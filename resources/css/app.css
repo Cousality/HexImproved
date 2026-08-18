@@ -387,3 +387,29 @@ body {
     color: rgba(253, 229, 217, 0.65);
     font-size: 13px;
 }
+.elo-chart {
+    width: 70%;
+    max-width: 900px;
+    margin: 100px auto;
+    padding: 35px 40px;
+
+    background-color:rgba(255, 235, 107, 0.178);
+    border: 1px solid rgba(246, 234, 153, 0.616);
+    border-radius: var(--radius);
+
+    box-sizing: border-box;
+    
+}
+
+.elo-chart h2 {
+    margin-top: 0;
+    margin-bottom: 30px;
+
+    color: var(--text-yellow);
+    text-align: center;
+    font-size: 26px;
+}
+.elo-chart canvas {
+    width: 100% !important;
+    height: 350px !important;
+}

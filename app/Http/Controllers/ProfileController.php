@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Game;
+use App\Models\EloHistory;
 
 class ProfileController extends Controller
 {
@@ -24,10 +25,21 @@ class ProfileController extends Controller
             $query->where('player1_id', $user->id)
                 ->orWhere('player2_id', $user->id);
         })
+
             ->where('status', 'finished')
             ->paginate(5);
 
-        return view('profile', ['gamesPlayed' => $gamesPlayed, 'wins' => $wins, 'losses' => $losses, 'previousGames' => $previousGames]);
+        $eloHistory = EloHistory::where('user_id', $user->id)
+            ->orderBy('created_at')
+            ->get();
+
+        return view('profile', [
+            'gamesPlayed' => $gamesPlayed,
+            'wins' => $wins,
+            'losses' => $losses,
+            'previousGames' => $previousGames,
+            'eloHistory' => $eloHistory
+        ]);
     }
 
 

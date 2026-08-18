@@ -7,6 +7,7 @@ use App\Events\GamePlayerJoined;
 use App\Models\Game;
 use App\Models\User;
 use Illuminate\Http\Request;
+use App\Models\EloHistory;
 
 class GameController extends Controller
 {
@@ -186,7 +187,7 @@ class GameController extends Controller
             $loserId = $game->opponentId($userId);
             $winner = User::find($userId);
             $loser = User::find($loserId);
-            
+
             //calculate new elo ratings for winner and loser
             $k = 32;
             $expectedWinner = 1 / (1 + pow(10, (($loser->elo - $winner->elo) / 400)));
@@ -195,6 +196,16 @@ class GameController extends Controller
             $loser->elo = round($loser->elo + $k * (0 - $expectedLoser));
             $winner->save();
             $loser->save();
+            EloHistory::create([
+                'user_id' => $winner->id,
+                'game_id' => $game->id,
+                'elo' => $winner->elo,
+            ]);
+            EloHistory::create([
+                'user_id' => $loser->id,
+                'game_id' => $game->id,
+                'elo' => $loser->elo,
+            ]);
         } else {
             $game->current_turn = $game->opponentId($userId);
         }
