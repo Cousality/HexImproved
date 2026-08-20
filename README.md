@@ -26,12 +26,12 @@ PHP for server-side game logic
 - Pusher Account
 ## Setup Instructions 
 
-git clone (this repository)
-download composer 
-in the terminal write composer install 
-npm install 
-php artisan migrate 
-npm run dev:all
+- git clone (this repository)
+- download composer 
+- in the terminal write composer install 
+- npm install 
+- php artisan migrate 
+- npm run dev:all
 ## Project Images 
 
 ## Contributors
