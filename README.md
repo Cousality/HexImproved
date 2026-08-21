@@ -33,6 +33,8 @@ PHP for server-side game logic
 - php artisan migrate 
 - npm run dev:all
 ## Project Images 
+<img width="1919" height="918" alt="image" src="https://github.com/user-attachments/assets/4b9df2a8-5d2d-4610-a278-7092a97f3b16" />
+
 
 ## Contributors
 
