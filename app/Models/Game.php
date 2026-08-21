@@ -13,6 +13,7 @@ class Game extends Model
         'current_turn',
         'winner_id',
         'status',
+        'mode',
     ];
 
     protected $casts = [

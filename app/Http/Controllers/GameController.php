@@ -4,10 +4,10 @@ namespace App\Http\Controllers;
 
 use App\Events\GameMoveMade;
 use App\Events\GamePlayerJoined;
+use App\Models\EloHistory;
 use App\Models\Game;
 use App\Models\User;
 use Illuminate\Http\Request;
-use App\Models\EloHistory;
 
 class GameController extends Controller
 {
@@ -20,10 +20,24 @@ class GameController extends Controller
         return redirect()->route('game.show', $game);
     }
 
+    public function createAi(Request $request)
+    {
+        $game = Game::create([
+            'player1_id' => $request->user()->id,
+            'player2_id' => null,
+            'board' => Game::emptyBoard($this->BoardSize),
+            'status' => 'active',
+            'current_turn' => $request->user()->id,
+            'mode' => 'ai',
+        ]);
+
+        return redirect()->route('game.show', $game);
+    }
+
     public function join(Request $request, Game $game)
     {
-        // Ignore if already full, or the visitor is already player1.
-        if ($game->isFull() || $game->player1_id === $request->user()->id) {
+        // AI games never accept a second human player.
+        if ($game->mode === 'ai' || $game->isFull() || $game->player1_id === $request->user()->id) {
             return redirect()->route('game.show', $game);
         }
 
@@ -40,13 +54,16 @@ class GameController extends Controller
     {
         $userId = $request->user()->id;
         $role = $game->playerNumber($userId);
+        $isReady = $game->mode === 'ai' || $game->isFull();
 
         return view('game', [
             'game' => $game,
             'board' => $game->board,
             'boardSize' => $game->boardSize(),
-            'role' => $role, // Null is Not player
-            'isMyTurn' => $game->status === 'active' && $game->current_turn === $userId,
+            'role' => $role,
+            'isReady' => $isReady,
+            'isMyTurn' => $game->status === 'active'
+                && $game->current_turn === $userId,
         ]);
     }
 
@@ -97,10 +114,10 @@ class GameController extends Controller
             }
         }
 
-        while (!empty($tilesToCheck)) {
+        while (! empty($tilesToCheck)) {
             $currentTile = array_pop($tilesToCheck);
 
-            $key = $currentTile['row'] . '-' . $currentTile['column'];
+            $key = $currentTile['row'].'-'.$currentTile['column'];
 
             if (in_array($key, $visited)) {
                 continue;
@@ -133,6 +150,20 @@ class GameController extends Controller
         return false;
     }
 
+    private function chooseAiMove(array $board): ?array
+    {
+        $availableTiles = array_values(array_filter(
+            $board,
+            fn (array $tile): bool => $tile['owner'] === null
+        ));
+
+        if (empty($availableTiles)) {
+            return null;
+        }
+
+        return $availableTiles[array_rand($availableTiles)];
+    }
+
     public function move(Request $request, Game $game)
     {
         $userId = $request->user()->id;
@@ -153,8 +184,8 @@ class GameController extends Controller
         $boardSize = $game->boardSize();
 
         $validated = $request->validate([
-            'row' => 'required|integer|min:0|max:' . ($boardSize - 1),
-            'column' => 'required|integer|min:0|max:' . ($boardSize - 1),
+            'row' => 'required|integer|min:0|max:'.($boardSize - 1),
+            'column' => 'required|integer|min:0|max:'.($boardSize - 1),
         ]);
 
         $board = $game->board;
@@ -173,58 +204,100 @@ class GameController extends Controller
         }
         unset($tile);
 
-        if (!$found) {
+        if (! $found) {
             abort(422, 'Invalid tile.');
         }
 
-        $game->board = $board;
+        $isAiGame = $game->mode === 'ai';
+        $humanWon = $this->checkWin($board, $boardSize, $role);
+        $winnerRole = null;
+        $aiMove = null;
+        $moves = [[
+            'row' => $validated['row'],
+            'column' => $validated['column'],
+            'role' => $role,
+        ]];
 
-        $won = $this->checkWin($board, $boardSize, $role);
-
-        if ($won) {
+        if ($humanWon) {
             $game->status = 'finished';
             $game->winner_id = $userId;
-            $loserId = $game->opponentId($userId);
-            $winner = User::find($userId);
-            $loser = User::find($loserId);
+            $winnerRole = $role;
 
-            //calculate new elo ratings for winner and loser
-            $k = 32;
-            $expectedWinner = 1 / (1 + pow(10, (($loser->elo - $winner->elo) / 400)));
-            $expectedLoser = 1 / (1 + pow(10, (($winner->elo - $loser->elo) / 400)));
-            $winner->elo = round($winner->elo + $k * (1 - $expectedWinner));
-            $loser->elo = round($loser->elo + $k * (0 - $expectedLoser));
-            $winner->save();
-            $loser->save();
-            EloHistory::create([
-                'user_id' => $winner->id,
-                'game_id' => $game->id,
-                'elo' => $winner->elo,
-            ]);
-            EloHistory::create([
-                'user_id' => $loser->id,
-                'game_id' => $game->id,
-                'elo' => $loser->elo,
-            ]);
+            if (! $isAiGame) {
+                $loserId = $game->opponentId($userId);
+                $winner = User::findOrFail($userId);
+                $loser = User::findOrFail($loserId);
+
+                // Calculate new Elo ratings for multiplayer games only.
+                $k = 32;
+                $expectedWinner = 1 / (1 + pow(10, (($loser->elo - $winner->elo) / 400)));
+                $expectedLoser = 1 / (1 + pow(10, (($winner->elo - $loser->elo) / 400)));
+                $winner->elo = round($winner->elo + $k * (1 - $expectedWinner));
+                $loser->elo = round($loser->elo + $k * (0 - $expectedLoser));
+                $winner->save();
+                $loser->save();
+
+                EloHistory::create([
+                    'user_id' => $winner->id,
+                    'game_id' => $game->id,
+                    'elo' => $winner->elo,
+                ]);
+                EloHistory::create([
+                    'user_id' => $loser->id,
+                    'game_id' => $game->id,
+                    'elo' => $loser->elo,
+                ]);
+            }
+        } elseif ($isAiGame) {
+            $aiMove = $this->chooseAiMove($board);
+
+            if ($aiMove === null) {
+                $game->status = 'finished';
+                $game->winner_id = null;
+                $winnerRole = 'player2';
+            } else {
+                foreach ($board as &$tile) {
+                    if ($tile['row'] === $aiMove['row'] && $tile['column'] === $aiMove['column']) {
+                        $tile['owner'] = 'player2';
+                        break;
+                    }
+                }
+                unset($tile);
+
+                $moves[] = [
+                    'row' => $aiMove['row'],
+                    'column' => $aiMove['column'],
+                    'role' => 'player2',
+                ];
+
+                if ($this->checkWin($board, $boardSize, 'player2')) {
+                    $game->status = 'finished';
+                    $game->winner_id = null;
+                    $winnerRole = 'player2';
+                } else {
+                    $game->current_turn = $userId;
+                }
+            }
         } else {
             $game->current_turn = $game->opponentId($userId);
         }
 
+        $game->board = $board;
         $game->save();
 
-        broadcast(new GameMoveMade(
-            $game,
-            $validated['row'],
-            $validated['column'],
-            $role,
-            $won
-        ));
+        if (! $isAiGame) {
+            broadcast(new GameMoveMade(
+                $game,
+                $validated['row'],
+                $validated['column'],
+                $role,
+                $humanWon
+            ));
+        }
 
         return response()->json([
-            'row' => $validated['row'],
-            'column' => $validated['column'],
-            'role' => $role,
-            'winner' => $won,
+            'moves' => $moves,
+            'winner' => $winnerRole,
         ]);
     }
 
@@ -236,7 +309,7 @@ class GameController extends Controller
 
         $game->board = Game::emptyBoard($game->boardSize());
         $game->current_turn = $game->player1_id;
-        $game->status = $game->isFull() ? 'active' : 'waiting';
+        $game->status = ($game->mode === 'ai' || $game->isFull()) ? 'active' : 'waiting';
         $game->winner_id = null;
         $game->save();
 

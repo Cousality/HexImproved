@@ -335,9 +335,9 @@
 
     <main class="game-page">
         <div class="game-heading">
-            <p class="game-kicker">Friendly match</p>
+            <p class="game-kicker">{{ $game->mode === 'ai' ? 'Versus AI' : 'Friendly match' }}</p>
             <h1 class="game-title" id="turnTitle">
-                @if (!$game->isFull())
+                @if (!$isReady)
                     {{ $role === null ? 'Join this game' : 'Waiting for an opponent…' }}
                 @elseif ($game->status === 'finished')
                     Game over
@@ -346,7 +346,7 @@
                 @endif
             </h1>
             <p class="game-subtitle">
-                @if (!$game->isFull())
+                @if (!$isReady)
                     {{ $role === null ? 'Take the open seat and start playing.' : 'Share the invite below to start the match.' }}
                 @elseif ($game->status === 'finished')
                     Thanks for playing Hex.
@@ -356,7 +356,7 @@
             </p>
         </div>
 
-        @if (!$game->isFull())
+        @if (!$isReady)
             @if ($role === null)
                 <section class="game-panel game-panel--compact" aria-label="Join match">
                     <div class="waiting-icon" aria-hidden="true">
@@ -467,6 +467,7 @@
         const gameId = {{ $game->id }};
         const role = @json($role);
         const isGameFull = @json($game->isFull());
+        const isAiGame = @json($game->mode === 'ai');
         let isMyTurn = @json($isMyTurn);
         const hexBoard = document.getElementById('hexBoard');
         const copyInvite = document.getElementById('copyInvite');
@@ -564,45 +565,83 @@
                 return;
             }
 
-            const response = await fetch(`/game/${gameId}/move`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Accept': 'application/json',
-                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
-                },
-                body: JSON.stringify({
-                    row: tile.row,
-                    column: tile.column
-                })
-            });
-
             const title = document.getElementById('turnTitle');
-
-            if (!response.ok) {
-                const error = await response.json().catch(() => null);
-                alert(error?.message || 'Something went wrong.');
-                return;
-            }
-
-            const data = await response.json();
-
-            tile.owner = role;
-
-            hexElement.setAttribute(
-                'fill',
-                role === 'player1' ? '#e274d3' : '#a97fe6'
-            );
-
-            if (data.winner) {
-                isMyTurn = false;
-                title.textContent = 'You win!';
-            } else {
-                isMyTurn = false;
-                title.textContent = "Opponent's turn";
-            }
-
+            isMyTurn = false;
             syncBoardState();
+
+            try {
+                const response = await fetch(`/game/${gameId}/move`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json',
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                    },
+                    body: JSON.stringify({
+                        row: tile.row,
+                        column: tile.column
+                    })
+                });
+
+                if (!response.ok) {
+                    const error = await response.json().catch(() => null);
+                    throw new Error(error?.message || 'Something went wrong.');
+                }
+
+                const data = await response.json();
+                const moves = Array.isArray(data.moves) ? data.moves : [];
+
+                const paintMove = move => {
+                    const movedTile = board.find(boardTile =>
+                        boardTile.row === Number(move.row) &&
+                        boardTile.column === Number(move.column)
+                    );
+
+                    if (!movedTile) {
+                        return;
+                    }
+
+                    movedTile.owner = move.role;
+                    movedTile.element.dataset.owner = move.role;
+                    movedTile.element.setAttribute(
+                        'fill',
+                        move.role === 'player1' ? '#e274d3' : '#a97fe6'
+                    );
+                };
+
+                const playerMoves = moves.filter(move => move.role === role);
+                const opponentMoves = moves.filter(move => move.role !== role);
+
+                playerMoves.forEach(paintMove);
+
+                if (isAiGame && opponentMoves.length > 0) {
+                    title.textContent = 'AI is thinking…';
+                    await new Promise(resolve => setTimeout(resolve, 500));
+                }
+
+                opponentMoves.forEach(paintMove);
+
+                if (data.winner !== null) {
+                    isMyTurn = false;
+                    title.textContent = data.winner === role ?
+                        'You win!' :
+                        (isAiGame ? 'AI wins!' : 'Opponent wins!');
+                } else if (isAiGame) {
+                    // The response already contains the completed AI move.
+                    isMyTurn = true;
+                    title.textContent = 'Your turn';
+                } else {
+                    isMyTurn = false;
+                    title.textContent = "Opponent's turn";
+                }
+
+                syncBoardState();
+            } catch (error) {
+                // The server did not accept the move, so let the player retry.
+                isMyTurn = true;
+                syncBoardState();
+                alert(error.message || 'Something went wrong.');
+            }
         }
     </script>
 
