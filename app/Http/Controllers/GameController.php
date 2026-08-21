@@ -152,16 +152,100 @@ class GameController extends Controller
 
     private function chooseAiMove(array $board): ?array
     {
-        $availableTiles = array_values(array_filter(
-            $board,
-            fn (array $tile): bool => $tile['owner'] === null
-        ));
-
-        if (empty($availableTiles)) {
+        if (empty($board)) {
             return null;
         }
 
-        return $availableTiles[array_rand($availableTiles)];
+        $boardSize = max(array_column($board, 'row')) + 1;
+        $bestMove = null;
+        $bestCost = PHP_INT_MAX;
+
+        foreach ($board as $index => $tile) {
+            if ($tile['owner'] !== null) {
+                continue;
+            }
+
+            $testBoard = $board;
+            $testBoard[$index]['owner'] = 'player2';
+
+            $cost = $this->shortestPathCost($testBoard, $boardSize);
+
+            if ($cost < $bestCost) {
+                $bestCost = $cost;
+
+                $bestMove = [
+                    'row' => $tile['row'],
+                    'column' => $tile['column'],
+                ];
+            }
+        }
+
+        return $bestMove;
+    }
+
+    private function shortestPathCost(array $board, int $boardSize): int
+    {
+        $distances = [];
+        $queue = [];
+
+        foreach ($board as $tile) {
+            if ($tile['column'] == 0 && $tile['owner'] != 'player1') {
+                $id = $tile['row'].','.$tile['column'];
+
+                $cost = $tile['owner'] == 'player2' ? 0 : 1;
+
+                $distances[$id] = $cost;
+
+                $queue[] = [
+                    'row' => $tile['row'],
+                    'column' => $tile['column'],
+                    'cost' => $cost,
+                ];
+            }
+        }
+
+        while (! empty($queue)) {
+            usort($queue, fn ($a, $b) => $a['cost'] <=> $b['cost']);
+
+            $current = array_shift($queue);
+
+            $row = $current['row'];
+            $column = $current['column'];
+            $cost = $current['cost'];
+
+            if ($column == $boardSize - 1) {
+                return $cost;
+            }
+
+            foreach ($this->neighbours($row, $column, $boardSize) as $neighbour) {
+                $neighbourTile = collect($board)->first(function ($tile) use ($neighbour) {
+                    return $tile['row'] == $neighbour['row']
+                        && $tile['column'] == $neighbour['column'];
+                });
+
+                if ($neighbourTile['owner'] == 'player1') {
+                    continue;
+                }
+
+                $id = $neighbour['row'].','.$neighbour['column'];
+
+                $stepCost = $neighbourTile['owner'] == 'player2' ? 0 : 1;
+
+                $newCost = $cost + $stepCost;
+
+                if (! isset($distances[$id]) || $newCost < $distances[$id]) {
+                    $distances[$id] = $newCost;
+
+                    $queue[] = [
+                        'row' => $neighbour['row'],
+                        'column' => $neighbour['column'],
+                        'cost' => $newCost,
+                    ];
+                }
+            }
+        }
+
+        return 999;
     }
 
     public function move(Request $request, Game $game)
