@@ -466,7 +466,6 @@
     <script>
         const gameId = {{ $game->id }};
         const role = @json($role);
-        const isAiGame = @json($isAiGame);
         const isGameFull = @json($game->isFull());
         const isAiGame = @json($game->mode === 'ai');
         let isMyTurn = @json($isMyTurn);
@@ -566,92 +565,8 @@
                 return;
             }
 
-<<<<<<< HEAD
-            const moveUrl = isAiGame
-                ? `/game/${gameId}/ai-move`
-                : `/game/${gameId}/move`;
-
-            const response = await fetch(moveUrl, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Accept': 'application/json',
-                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
-                },
-                body: JSON.stringify({
-                    row: tile.row,
-                    column: tile.column
-                })
-            });
-
-            const title = document.getElementById('turnTitle');
-
-            if (!response.ok) {
-                const error = await response.json().catch(() => null);
-                alert(error?.message || 'Something went wrong.');
-                return;
-            }
-
-            const data = await response.json();
-
-            if (isAiGame) {
-                data.board.forEach(updatedTile => {
-                    const tile = board.find(tile =>
-                        tile.row === updatedTile.row &&
-                        tile.column === updatedTile.column
-                    );
-
-                    if (!tile) {
-                        return;
-                    }
-
-                    tile.owner = updatedTile.owner;
-                    tile.element.dataset.owner = updatedTile.owner ?? '';
-
-                    if (updatedTile.owner === 'player1') {
-                        tile.element.setAttribute('fill', '#e274d3');
-                    } else if (updatedTile.owner === 'player2') {
-                        tile.element.setAttribute('fill', '#a97fe6');
-                    } else {
-                        tile.element.setAttribute('fill', '#5b4964');
-                    }
-                });
-
-                isMyTurn = !data.winner;
-
-                if (data.winner === 1) {
-                    title.textContent = 'You win!';
-                } else if (data.winner === 2) {
-                    title.textContent = 'AI wins!';
-                } else {
-                    title.textContent = 'Your turn';
-                }
-
-                syncBoardState();
-                return;
-            }
-
-            // Existing friendly multiplayer handling
-            tile.owner = role;
-            tile.element.dataset.owner = role;
-
-            hexElement.setAttribute(
-                'fill',
-                role === 'player1' ? '#e274d3' : '#a97fe6'
-            );
-
-            if (data.winner) {
-                isMyTurn = false;
-                title.textContent = 'You win!';
-            } else {
-                isMyTurn = false;
-                title.textContent = "Opponent's turn";
-            }
-
-=======
             const title = document.getElementById('turnTitle');
             isMyTurn = false;
->>>>>>> 2733ffedbd90239cdbce2064eb5eb2e3ad6e05d8
             syncBoardState();
 
             try {
@@ -712,7 +627,6 @@
                         'You win!' :
                         (isAiGame ? 'AI wins!' : 'Opponent wins!');
                 } else if (isAiGame) {
-                    // The response already contains the completed AI move.
                     isMyTurn = true;
                     title.textContent = 'Your turn';
                 } else {
@@ -722,7 +636,6 @@
 
                 syncBoardState();
             } catch (error) {
-                // The server did not accept the move, so let the player retry.
                 isMyTurn = true;
                 syncBoardState();
                 alert(error.message || 'Something went wrong.');

@@ -40,9 +40,6 @@ Route::middleware('auth')->group(function () {
 
     Route::post('/game/ai', [GameController::class, 'createAi'])
         ->name('game.ai.create');
-
-    Route::post('/game/{game}/ai-move', [GameController::class, 'aiMove'])
-        ->name('game.aiMove');
 });
 
 Route::get('/profile', [ProfileController::class, 'show'])
@@ -52,5 +49,3 @@ Route::post('/profile/picture', [ProfileController::class, 'updatePicture'])
     ->name('profile.picture');
 
 Route::get('/test-dijkstra', [GameController::class, 'testDijkstra']);
-
-
