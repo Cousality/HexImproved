@@ -337,7 +337,7 @@
         <div class="game-heading">
             <p class="game-kicker">Friendly match</p>
             <h1 class="game-title" id="turnTitle">
-                @if (!$game->isFull())
+                @if (!$game->isFull()&& !$isAiGame)
                     {{ $role === null ? 'Join this game' : 'Waiting for an opponent…' }}
                 @elseif ($game->status === 'finished')
                     Game over
@@ -346,7 +346,7 @@
                 @endif
             </h1>
             <p class="game-subtitle">
-                @if (!$game->isFull())
+                @if (!$game->isFull()&& !$isAiGame)
                     {{ $role === null ? 'Take the open seat and start playing.' : 'Share the invite below to start the match.' }}
                 @elseif ($game->status === 'finished')
                     Thanks for playing Hex.
@@ -356,7 +356,7 @@
             </p>
         </div>
 
-        @if (!$game->isFull())
+        @if (!$game->isFull() && !$isAiGame)
             @if ($role === null)
                 <section class="game-panel game-panel--compact" aria-label="Join match">
                     <div class="waiting-icon" aria-hidden="true">
@@ -466,6 +466,7 @@
     <script>
         const gameId = {{ $game->id }};
         const role = @json($role);
+        const isAiGame = @json($isAiGame);
         const isGameFull = @json($game->isFull());
         let isMyTurn = @json($isMyTurn);
         const hexBoard = document.getElementById('hexBoard');
@@ -564,7 +565,11 @@
                 return;
             }
 
-            const response = await fetch(`/game/${gameId}/move`, {
+            const moveUrl = isAiGame
+                ? `/game/${gameId}/ai-move`
+                : `/game/${gameId}/move`;
+
+            const response = await fetch(moveUrl, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -587,7 +592,46 @@
 
             const data = await response.json();
 
+            if (isAiGame) {
+                data.board.forEach(updatedTile => {
+                    const tile = board.find(tile =>
+                        tile.row === updatedTile.row &&
+                        tile.column === updatedTile.column
+                    );
+
+                    if (!tile) {
+                        return;
+                    }
+
+                    tile.owner = updatedTile.owner;
+                    tile.element.dataset.owner = updatedTile.owner ?? '';
+
+                    if (updatedTile.owner === 'player1') {
+                        tile.element.setAttribute('fill', '#e274d3');
+                    } else if (updatedTile.owner === 'player2') {
+                        tile.element.setAttribute('fill', '#a97fe6');
+                    } else {
+                        tile.element.setAttribute('fill', '#5b4964');
+                    }
+                });
+
+                isMyTurn = !data.winner;
+
+                if (data.winner === 1) {
+                    title.textContent = 'You win!';
+                } else if (data.winner === 2) {
+                    title.textContent = 'AI wins!';
+                } else {
+                    title.textContent = 'Your turn';
+                }
+
+                syncBoardState();
+                return;
+            }
+
+            // Existing friendly multiplayer handling
             tile.owner = role;
+            tile.element.dataset.owner = role;
 
             hexElement.setAttribute(
                 'fill',

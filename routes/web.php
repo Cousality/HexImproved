@@ -37,6 +37,12 @@ Route::middleware('auth')->group(function () {
     Route::get('/game/{game}', [GameController::class, 'show'])->name('game.show');
     Route::post('/game/{game}/move', [GameController::class, 'move'])->name('game.move');
     Route::post('/game/{game}/reset', [GameController::class, 'reset'])->name('game.reset');
+
+    Route::post('/game/ai', [GameController::class, 'createAi'])
+        ->name('game.ai.create');
+
+    Route::post('/game/{game}/ai-move', [GameController::class, 'aiMove'])
+        ->name('game.aiMove');
 });
 
 Route::get('/profile', [ProfileController::class, 'show'])
@@ -44,3 +50,7 @@ Route::get('/profile', [ProfileController::class, 'show'])
 
 Route::post('/profile/picture', [ProfileController::class, 'updatePicture'])
     ->name('profile.picture');
+
+Route::get('/test-dijkstra', [GameController::class, 'testDijkstra']);
+
+
