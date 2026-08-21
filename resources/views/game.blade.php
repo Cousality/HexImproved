@@ -566,6 +566,7 @@
                 return;
             }
 
+<<<<<<< HEAD
             const moveUrl = isAiGame
                 ? `/game/${gameId}/ai-move`
                 : `/game/${gameId}/move`;
@@ -585,10 +586,11 @@
 
             const title = document.getElementById('turnTitle');
 
-                if (!response.ok) {
-                    const error = await response.json().catch(() => null);
-                    throw new Error(error?.message || 'Something went wrong.');
-                }
+            if (!response.ok) {
+                const error = await response.json().catch(() => null);
+                alert(error?.message || 'Something went wrong.');
+                return;
+            }
 
             const data = await response.json();
 
@@ -637,6 +639,60 @@
                 'fill',
                 role === 'player1' ? '#e274d3' : '#a97fe6'
             );
+
+            if (data.winner) {
+                isMyTurn = false;
+                title.textContent = 'You win!';
+            } else {
+                isMyTurn = false;
+                title.textContent = "Opponent's turn";
+            }
+
+=======
+            const title = document.getElementById('turnTitle');
+            isMyTurn = false;
+>>>>>>> 2733ffedbd90239cdbce2064eb5eb2e3ad6e05d8
+            syncBoardState();
+
+            try {
+                const response = await fetch(`/game/${gameId}/move`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json',
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                    },
+                    body: JSON.stringify({
+                        row: tile.row,
+                        column: tile.column
+                    })
+                });
+
+                if (!response.ok) {
+                    const error = await response.json().catch(() => null);
+                    throw new Error(error?.message || 'Something went wrong.');
+                }
+
+                const data = await response.json();
+                const moves = Array.isArray(data.moves) ? data.moves : [];
+
+                const paintMove = move => {
+                    const movedTile = board.find(boardTile =>
+                        boardTile.row === Number(move.row) &&
+                        boardTile.column === Number(move.column)
+                    );
+
+                    if (!movedTile) {
+                        return;
+                    }
+
+                    movedTile.owner = move.role;
+                    movedTile.element.dataset.owner = move.role;
+                    movedTile.element.setAttribute(
+                        'fill',
+                        move.role === 'player1' ? '#e274d3' : '#a97fe6'
+                    );
+                };
 
                 const playerMoves = moves.filter(move => move.role === role);
                 const opponentMoves = moves.filter(move => move.role !== role);

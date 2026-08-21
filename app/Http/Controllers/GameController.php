@@ -9,7 +9,6 @@ use App\Models\Game;
 use App\Models\User;
 use Illuminate\Http\Request;
 
-
 class GameController extends Controller
 {
     public $BoardSize = 7;
@@ -472,7 +471,34 @@ class GameController extends Controller
         }
         return 999;
     }
-   
+    private function chooseAiMove(array $board, int $boardSize): ?array
+    {
+        $bestMove = null;
+        $bestCost = PHP_INT_MAX;
+
+        foreach ($board as $index => $tile) {
+
+            if ($tile['owner'] !== null) {
+                continue;
+            }
+            
+            $testBoard = $board;
+            $testBoard[$index]['owner'] = 'player2';
+
+            $cost = $this->shortestPathCost($testBoard, $boardSize);
+
+            if ($cost < $bestCost) {
+                $bestCost = $cost;
+
+                $bestMove = [
+                    'row' => $tile['row'],
+                    'column' => $tile['column']
+                ];
+            }
+        }
+
+        return $bestMove;
+    }
 
 }
 
