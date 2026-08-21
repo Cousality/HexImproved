@@ -2,8 +2,8 @@
 
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\GameController;
-use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ProfileController;
+use Illuminate\Support\Facades\Route;
 
 /*
 |--------------------------------------------------------------------------
@@ -37,6 +37,8 @@ Route::middleware('auth')->group(function () {
     Route::get('/game/{game}', [GameController::class, 'show'])->name('game.show');
     Route::post('/game/{game}/move', [GameController::class, 'move'])->name('game.move');
     Route::post('/game/{game}/reset', [GameController::class, 'reset'])->name('game.reset');
+
+    Route::post('/game.ai', [GameController::class, 'createAi'])->name('game.ai.create');
 });
 
 Route::get('/profile', [ProfileController::class, 'show'])

@@ -1,7 +1,7 @@
 <?php
 
 namespace App\Models;
-use App\Models\User;
+
 use Illuminate\Database\Eloquent\Model;
 
 class Game extends Model
@@ -126,4 +126,3 @@ class Game extends Model
         return (int) sqrt(count($this->board));
     }
 }
-    //fillable lists the columns Laravel is allowed to fill when creating a game.
