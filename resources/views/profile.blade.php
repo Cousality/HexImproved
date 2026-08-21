@@ -104,11 +104,16 @@
                             <p>Loss</p>
                         @endif
 
-                        @if($game->player1_id == auth()->user()->id)
-                            <p>Opponent: {{ $game->player2->name }}</p>
-                        @else
-                            <p>Opponent: {{ $game->player1->name }}</p>
+                        @if ($game->player1_id && $game->player2_id !== null){
+                            @if($game->player1_id == auth()->user()->id)
+                                <p>Opponent: {{ $game->player2->name }}</p>
+                            @else
+                                <p>Opponent: {{ $game->player1->name }}</p>
+                            @endif
                         @endif
+
+                        }
+
 
                         <p>{{ $game->created_at->format('j M Y') }}</p>
 
