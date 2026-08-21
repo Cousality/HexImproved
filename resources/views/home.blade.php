@@ -45,10 +45,7 @@
                 <x-mode-card icon-variant="ai" kicker="Versus AI" title="Play vs AI"
                     description="Challenge a bot to a hex game. Choose from beginner to master."
                     button-text="Challenge AI" button-variant="secondary" :href="route('game.ai.create')" method="POST">
-<<<<<<< HEAD
 
-=======
->>>>>>> 2733ffedbd90239cdbce2064eb5eb2e3ad6e05d8
                     <x-slot:icon>
                         <svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round"
                             stroke-linejoin="round">
